@@ -26,3 +26,7 @@
 *.exe
 *.out
 *.app
+
+moc_*
+Makefile
+libdqtx*
