@@ -37,11 +37,11 @@
 
 namespace dqtx
 {
-class QHistogramWidget : public QWidget
+class QSparkBarWidget : public QWidget
 {
     Q_OBJECT
 public:
-    QHistogramWidget(QWidget *_parent = 0, Qt::WindowFlags _flags = 0);
+    QSparkBarWidget(QWidget *_parent = 0, Qt::WindowFlags _flags = 0);
     
 public:
     QList< double > getData() const;

@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dqtx/QHistogramWidget.hpp>
+#include <dqtx/QSparkBarWidget.hpp>
 #include <QPainter>
 #include <QPen>
 #include <QPainterPath>
@@ -37,7 +37,7 @@
 
 namespace dqtx
 {
-QHistogramWidget::QHistogramWidget(QWidget *_parent, Qt::WindowFlags _flags)
+QSparkBarWidget::QSparkBarWidget(QWidget *_parent, Qt::WindowFlags _flags)
     : QWidget(_parent, _flags)
     , m_minRange(1)
     , m_color(QColor(Qt::black))
@@ -51,7 +51,7 @@ QHistogramWidget::QHistogramWidget(QWidget *_parent, Qt::WindowFlags _flags)
     QObject::connect(this, SIGNAL(maxObservationsChanged()), this, SLOT(update()));
 }
 
-QList< double > QHistogramWidget::getData() const
+QList< double > QSparkBarWidget::getData() const
 {
     m_lock.lock();
     QList< double > retval = m_data;
@@ -60,7 +60,7 @@ QList< double > QHistogramWidget::getData() const
     return retval;
 }
 
-void QHistogramWidget::insertObservation(const double _data)
+void QSparkBarWidget::insertObservation(const double _data)
 {
     m_lock.lock();
     
@@ -79,7 +79,7 @@ void QHistogramWidget::insertObservation(const double _data)
     emit observationInserted();
 }
 
-double QHistogramWidget::getMinRange() const
+double QSparkBarWidget::getMinRange() const
 {
     m_lock.lock();
     double retval = m_minRange;
@@ -88,7 +88,7 @@ double QHistogramWidget::getMinRange() const
     return retval;
 }
 
-void QHistogramWidget::setMinRange(const double _range)
+void QSparkBarWidget::setMinRange(const double _range)
 {
     m_lock.lock();
     m_minRange = _range;
@@ -97,7 +97,7 @@ void QHistogramWidget::setMinRange(const double _range)
     emit rangeChanged();
 }
 
-QColor QHistogramWidget::getColor() const
+QColor QSparkBarWidget::getColor() const
 {
     m_lock.lock();
     QColor retval = m_color;
@@ -106,7 +106,7 @@ QColor QHistogramWidget::getColor() const
     return retval;
 }
 
-void QHistogramWidget::setColor(const QColor &_color)
+void QSparkBarWidget::setColor(const QColor &_color)
 {
     m_lock.lock();
     m_color = _color;
@@ -115,7 +115,7 @@ void QHistogramWidget::setColor(const QColor &_color)
     emit colorChanged();
 }
 
-int QHistogramWidget::getPadding() const
+int QSparkBarWidget::getPadding() const
 {
     m_lock.lock();
     int retval = m_padding;
@@ -124,7 +124,7 @@ int QHistogramWidget::getPadding() const
     return retval;
 }
 
-void QHistogramWidget::setPadding(int _padding)
+void QSparkBarWidget::setPadding(int _padding)
 {
     m_lock.lock();
     m_padding = _padding;
@@ -133,7 +133,7 @@ void QHistogramWidget::setPadding(int _padding)
     emit paddingChanged();
 }
 
-int QHistogramWidget::getMaxObservations() const
+int QSparkBarWidget::getMaxObservations() const
 {
     m_lock.lock();
     int retval = m_maxObservations;
@@ -142,7 +142,7 @@ int QHistogramWidget::getMaxObservations() const
     return retval;
 }
 
-void QHistogramWidget::setMaxObservations(int _max)
+void QSparkBarWidget::setMaxObservations(int _max)
 {
     m_lock.lock();
     m_maxObservations = _max;
@@ -160,12 +160,12 @@ void QHistogramWidget::setMaxObservations(int _max)
     emit maxObservationsChanged();
 }
 
-QSize QHistogramWidget::sizeHint() const
+QSize QSparkBarWidget::sizeHint() const
 {
     return QSize((m_maxObservations + m_padding) * 2, 29);
 }
 
-void QHistogramWidget::paintEvent(QPaintEvent *_event)
+void QSparkBarWidget::paintEvent(QPaintEvent *_event)
 {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, false);
