@@ -6,8 +6,11 @@ INCLUDEPATH += . ./include
 VERSION = 0.0.1
 
 # Input
-HEADERS += include/dqtx/QSparkLineWidget.hpp
-SOURCES += src/QSparkLineWidget.cpp
+HEADERS += include/dqtx/QSparkLineWidget.hpp \
+           include/dqtx/QHistogramWidget.hpp
+
+SOURCES += src/QSparkLineWidget.cpp \
+           src/QHistogramWidget.cpp
 
 target.path=/usr/local/lib
 INSTALLS += target
