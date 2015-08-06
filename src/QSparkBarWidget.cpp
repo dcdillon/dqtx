@@ -168,7 +168,7 @@ void QSparkBarWidget::setMaxObservations(int _max)
 
 QSize QSparkBarWidget::sizeHint() const
 {
-    return QSize((m_maxObservations + m_padding) * 2, 29);
+    return QSize((m_maxObservations - 1 + m_padding) * 2, 29);
 }
 
 void QSparkBarWidget::paintEvent(QPaintEvent *_event)
@@ -176,50 +176,51 @@ void QSparkBarWidget::paintEvent(QPaintEvent *_event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, false);
     painter.setPen(QPen(m_color, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    QPainterPath path;
     
     m_lock.lock();
 
-    double min = *std::min_element(m_data.begin(), m_data.end());
-    double max = *std::max_element(m_data.begin(), m_data.end());
-    
-    double range = max - min;
-    
-    if (range < m_minRange)
+    if (!m_data.empty())
     {
-        min -= (m_minRange - range) / 2;
-        max += (m_minRange - range) / 2;
-    }
-    
-    int graphHeight = _event->rect().height() - (2 * m_padding);
-    int graphWidth = _event->rect().width() - (2 * m_padding);
-    
-    double skip = 0;
-    
-    if (min != max)
-    {
-        skip = double(graphHeight - 1) / (max - min);
-    }
-    
-    double width = graphWidth / double(m_data.size() - 1);
-    
-    double x = m_padding;
-    double y = -m_padding;
-    
-    QPoint bl = _event->rect().bottomLeft();
-    
-    QList< double >::iterator i = m_data.begin();
-    QList< double >::iterator iend = m_data.end();
-    
-    for ( ; i != iend; ++i)
-    {
-        double height = (*i - min) * skip;
-        y = -m_padding - height;
+        double min = *std::min_element(m_data.begin(), m_data.end());
+        double max = *std::max_element(m_data.begin(), m_data.end());
         
-        painter.drawLine(bl.x() + x, bl.y() - m_padding,
-            bl.x() + x, bl.y() + y);
+        double range = max - min;
         
-        x += width;
+        if (range < m_minRange)
+        {
+            max += m_minRange - range;
+        }
+        
+        int graphHeight = _event->rect().height() - (2 * m_padding);
+        int graphWidth = _event->rect().width() - (2 * m_padding);
+        
+        double skip = 0;
+        
+        if (min != max)
+        {
+            skip = double(graphHeight - 1) / (max - min);
+        }
+        
+        double width = graphWidth / double(m_data.size() - 1);
+        
+        double x = m_padding;
+        double y = -m_padding;
+        
+        QPoint bl = _event->rect().bottomLeft();
+        
+        QList< double >::iterator i = m_data.begin();
+        QList< double >::iterator iend = m_data.end();
+        
+        for ( ; i != iend; ++i)
+        {
+            double height = (*i - min) * skip;
+            y = -m_padding - height;
+            
+            painter.drawLine(bl.x() + x, bl.y() - m_padding,
+                bl.x() + x, bl.y() + y);
+            
+            x += width;
+        }
     }
 
     m_lock.unlock();

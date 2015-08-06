@@ -169,7 +169,7 @@ void QSparkLineWidget::setMaxObservations(int _max)
 
 QSize QSparkLineWidget::sizeHint() const
 {
-    return QSize(m_maxObservations * 2, 29);
+    return QSize((m_maxObservations - 1 + m_padding) * 2, 29);
 }
 
 void QSparkLineWidget::paintEvent(QPaintEvent *_event)
