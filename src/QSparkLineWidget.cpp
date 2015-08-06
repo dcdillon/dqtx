@@ -34,6 +34,7 @@
 #include <QPainterPath>
 #include <iostream>
 #include <QPaintEvent>
+#include <algorithm>
 
 namespace dqtx
 {
@@ -73,6 +74,12 @@ void QSparkLineWidget::insertObservation(const double _data)
     }
     
     m_data.push_back(_data);
+    
+    double min = *std::min_element(m_data.begin(), m_data.end());
+    double max = *std::max_element(m_data.begin(), m_data.end());
+    double change = m_data.back() - m_data.front();
+    
+    setToolTip(QString("Min: %1\nMax: %2\nChange: %3").arg(min, max, change));
     
     m_lock.unlock();
     
