@@ -44,19 +44,10 @@ public:
     QSparkLineWidget(QWidget *_parent = 0, Qt::WindowFlags _flags = 0);
     
 public:
-    QList< double > getData() const;
     void insertObservation(const double _data);
-    
-    double getMinRange() const;
     void setMinRange(const double _range);
-    
-    QColor getColor() const;
     void setColor(const QColor &_color);
-    
-    int getPadding() const;
     void setPadding(const int _padding);
-    
-    int getMaxObservations() const;
     void setMaxObservations(const int _max);
     
 public:
@@ -75,10 +66,17 @@ private:
     int m_maxObservations;
     
 signals:
-    void observationInserted();
-    void rangeChanged();
-    void colorChanged();
-    void paddingChanged();
-    void maxObservationsChanged();
+    void observationInserted(double _obs);
+    void minRangeChanged(double _range);
+    void colorChanged(QColor _color);
+    void paddingChanged(int _padding);
+    void maxObservationsChanged(int _max);
+    
+private slots:
+    void onObservationInserted(double _obs);
+    void onMinRangeChanged(double _range);
+    void onColorChanged(QColor _color);
+    void onPaddingChanged(int _padding);
+    void onMaxObservationsChanged(int _max);
 };
 } // namespace dqtx

@@ -45,126 +45,36 @@ QSparkLineWidget::QSparkLineWidget(QWidget *_parent, Qt::WindowFlags _flags)
     , m_padding(5)
     , m_maxObservations(30)
 {
-    QObject::connect(this, SIGNAL(observationInserted()), this, SLOT(update()));
-    QObject::connect(this, SIGNAL(rangeChanged()), this, SLOT(update()));
-    QObject::connect(this, SIGNAL(colorChanged()), this, SLOT(update()));
-    QObject::connect(this, SIGNAL(paddingChanged()), this, SLOT(update()));
-    QObject::connect(this, SIGNAL(maxObservationsChanged()), this, SLOT(update()));
-}
-
-QList< double > QSparkLineWidget::getData() const
-{
-    m_lock.lock();
-    QList< double > retval = m_data;
-    m_lock.unlock();
-    
-    return retval;
+    QObject::connect(this, SIGNAL(observationInserted(double)), this, SLOT(onObservationInserted(double)));
+    QObject::connect(this, SIGNAL(minRangeChanged(double)), this, SLOT(onMinRangeChanged(double)));
+    QObject::connect(this, SIGNAL(colorChanged(QColor)), this, SLOT(onColorChanged(QColor)));
+    QObject::connect(this, SIGNAL(paddingChanged(int)), this, SLOT(onPaddingChanged(int)));
+    QObject::connect(this, SIGNAL(maxObservationsChanged(int)), this, SLOT(onMaxObservationsChanged(int)));
 }
 
 void QSparkLineWidget::insertObservation(const double _data)
 {
-    m_lock.lock();
-    
-    if (m_maxObservations > 2)
-    {
-        while (m_data.size() >= m_maxObservations)
-        {
-            m_data.pop_front();
-        }
-    }
-    
-    m_data.push_back(_data);
-    
-    double min = *std::min_element(m_data.begin(), m_data.end());
-    double max = *std::max_element(m_data.begin(), m_data.end());
-    double change = m_data.back() - m_data.front();
-    
-    setToolTip(QString("Min: %1\nMax: %2\nChange: %3").arg(min, max, change));
-    
-    m_lock.unlock();
-    
-    emit observationInserted();
-}
-
-double QSparkLineWidget::getMinRange() const
-{
-    m_lock.lock();
-    double retval = m_minRange;
-    m_lock.unlock();
-    
-    return retval;
+    emit observationInserted(_data);
 }
 
 void QSparkLineWidget::setMinRange(const double _range)
 {
-    m_lock.lock();
-    m_minRange = _range;
-    m_lock.unlock();
-    
-    emit rangeChanged();
-}
-
-QColor QSparkLineWidget::getColor() const
-{
-    m_lock.lock();
-    QColor retval = m_color;
-    m_lock.unlock();
-    
-    return retval;
+    emit minRangeChanged(_range);
 }
 
 void QSparkLineWidget::setColor(const QColor &_color)
 {
-    m_lock.lock();
-    m_color = _color;
-    m_lock.unlock();
-    
-    emit colorChanged();
-}
-
-int QSparkLineWidget::getPadding() const
-{
-    m_lock.lock();
-    int retval = m_padding;
-    m_lock.unlock();
-    
-    return retval;
+    emit colorChanged(_color);
 }
 
 void QSparkLineWidget::setPadding(int _padding)
 {
-    m_lock.lock();
-    m_padding = _padding;
-    m_lock.unlock();
-    
-    emit paddingChanged();
-}
-
-int QSparkLineWidget::getMaxObservations() const
-{
-    m_lock.lock();
-    int retval = m_maxObservations;
-    m_lock.unlock();
-    
-    return retval;
+    emit paddingChanged(_padding);
 }
 
 void QSparkLineWidget::setMaxObservations(int _max)
 {
-    m_lock.lock();
-    m_maxObservations = _max;
-    
-    if (m_maxObservations > 1)
-    {
-        while (int(m_data.size()) > m_maxObservations)
-        {
-            m_data.pop_front();
-        }
-    }
-    
-    m_lock.unlock();
-    
-    emit maxObservationsChanged();
+    emit maxObservationsChanged(_max);
 }
 
 QSize QSparkLineWidget::sizeHint() const
@@ -244,4 +154,58 @@ void QSparkLineWidget::paintEvent(QPaintEvent *_event)
         painter.drawPath(path);
     }
 }
+
+void QSparkLineWidget::onObservationInserted(double _data)
+{
+    if (m_maxObservations > 2)
+    {
+        while (m_data.size() >= m_maxObservations)
+        {
+            m_data.pop_front();
+        }
+    }
+    
+    m_data.push_back(_data);
+    
+    double min = *std::min_element(m_data.begin(), m_data.end());
+    double max = *std::max_element(m_data.begin(), m_data.end());
+    double change = m_data.back() - m_data.front();
+    
+    setToolTip(QString("Min: %1\nMax: %2\nChange: %3").arg(min, max, change));
+    update();
+}
+
+void QSparkLineWidget::onMinRangeChanged(double _range)
+{
+    m_minRange = _range;
+    update();
+}
+
+void QSparkLineWidget::onColorChanged(QColor _color)
+{
+    m_color = _color;
+    update();
+}
+
+void QSparkLineWidget::onPaddingChanged(int _padding)
+{
+    m_padding = _padding;
+    update();
+}
+
+void QSparkLineWidget::onMaxObservationsChanged(int _max)
+{
+    m_maxObservations = _max;
+    
+    if (m_maxObservations > 2)
+    {
+        while (m_data.size() > m_maxObservations)
+        {
+            m_data.pop_front();
+        }
+    }
+    
+    update();
+}
+
 } // namespace dqtx
