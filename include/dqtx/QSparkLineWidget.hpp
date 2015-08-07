@@ -40,43 +40,68 @@ namespace dqtx
 class QSparkLineWidget : public QWidget
 {
     Q_OBJECT
-public:
+   public:
+    enum DisplayType
+    {
+        DisplayTypeLine = 1,
+        DisplayTypeBars = 2
+    };
+
+   public:
     QSparkLineWidget(QWidget *_parent = 0, Qt::WindowFlags _flags = 0);
-    
-public:
+
+   public:
     void insertObservation(const double _data);
+    void setDisplayType(const DisplayType _type);
     void setMinRange(const double _range);
     void setColor(const QColor &_color);
     void setPadding(const int _padding);
     void setMaxObservations(const int _max);
-    
-public:
+
+   public:
     QSize sizeHint() const;
-    
-protected:
+
+   protected:
     void paintEvent(QPaintEvent *_event);
-    
-private:
-    mutable QMutex m_lock;
+
+   private:
+    void drawLine(const QList< double > &_data,
+                  QPainter &_painter,
+                  const QRect &_rect,
+                  int _leftPadding,
+                  int _rightPadding,
+                  int _topPadding,
+                  int _bottomPadding);
+    void drawBars(const QList< double > &_data,
+                  QPainter &_painter,
+                  const QRect &_rect,
+                  int _leftPadding,
+                  int _rightPadding,
+                  int _topPadding,
+                  int _bottomPadding);
+
+   private:
     QList< double > m_data;
+    DisplayType m_displayType;
     double m_minRange;
     QColor m_color;
-    QColor m_backgroundColor;
     int m_padding;
     int m_maxObservations;
-    
-signals:
+
+   signals:
     void observationInserted(double _obs);
+    void displayTypeChanged(int _type);
     void minRangeChanged(double _range);
     void colorChanged(QColor _color);
     void paddingChanged(int _padding);
     void maxObservationsChanged(int _max);
-    
-private slots:
+
+   private slots:
     void onObservationInserted(double _obs);
+    void onDisplayTypeChanged(int _type);
     void onMinRangeChanged(double _range);
     void onColorChanged(QColor _color);
     void onPaddingChanged(int _padding);
     void onMaxObservationsChanged(int _max);
 };
-} // namespace dqtx
+}  // namespace dqtx

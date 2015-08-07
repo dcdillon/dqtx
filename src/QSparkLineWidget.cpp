@@ -40,21 +40,34 @@ namespace dqtx
 {
 QSparkLineWidget::QSparkLineWidget(QWidget *_parent, Qt::WindowFlags _flags)
     : QWidget(_parent, _flags)
+    , m_displayType(DisplayTypeLine)
     , m_minRange(1)
     , m_color(QColor(Qt::black))
     , m_padding(5)
     , m_maxObservations(30)
 {
-    QObject::connect(this, SIGNAL(observationInserted(double)), this, SLOT(onObservationInserted(double)));
-    QObject::connect(this, SIGNAL(minRangeChanged(double)), this, SLOT(onMinRangeChanged(double)));
-    QObject::connect(this, SIGNAL(colorChanged(QColor)), this, SLOT(onColorChanged(QColor)));
-    QObject::connect(this, SIGNAL(paddingChanged(int)), this, SLOT(onPaddingChanged(int)));
-    QObject::connect(this, SIGNAL(maxObservationsChanged(int)), this, SLOT(onMaxObservationsChanged(int)));
+    QObject::connect(this, SIGNAL(observationInserted(double)), this,
+                     SLOT(onObservationInserted(double)));
+    QObject::connect(this, SIGNAL(displayTypeChanged(int)), this,
+                     SLOT(onDisplayTypeChanged(int)));
+    QObject::connect(this, SIGNAL(minRangeChanged(double)), this,
+                     SLOT(onMinRangeChanged(double)));
+    QObject::connect(this, SIGNAL(colorChanged(QColor)), this,
+                     SLOT(onColorChanged(QColor)));
+    QObject::connect(this, SIGNAL(paddingChanged(int)), this,
+                     SLOT(onPaddingChanged(int)));
+    QObject::connect(this, SIGNAL(maxObservationsChanged(int)), this,
+                     SLOT(onMaxObservationsChanged(int)));
 }
 
 void QSparkLineWidget::insertObservation(const double _data)
 {
     emit observationInserted(_data);
+}
+
+void QSparkLineWidget::setDisplayType(const DisplayType _type)
+{
+    emit displayTypeChanged(int(_type));
 }
 
 void QSparkLineWidget::setMinRange(const double _range)
@@ -85,73 +98,148 @@ QSize QSparkLineWidget::sizeHint() const
 void QSparkLineWidget::paintEvent(QPaintEvent *_event)
 {
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setPen(QPen(m_color, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    QPainterPath path;
-    
-    m_lock.lock();
 
-    if (m_data.size() > 1)
+    switch (m_displayType)
     {
-        double min = *std::min_element(m_data.begin(), m_data.end());
-        double max = *std::max_element(m_data.begin(), m_data.end());
-        
+        case DisplayTypeBars:
+            drawBars(m_data, painter, _event->rect(), m_padding, m_padding,
+                     m_padding, m_padding);
+            break;
+        case DisplayTypeLine:
+        default:
+            drawLine(m_data, painter, _event->rect(), m_padding, m_padding,
+                     m_padding, m_padding);
+            break;
+    }
+}
+
+void QSparkLineWidget::drawLine(const QList< double > &_data,
+                                QPainter &_painter,
+                                const QRect &_rect,
+                                int _leftPadding,
+                                int _rightPadding,
+                                int _topPadding,
+                                int _bottomPadding)
+{
+    int graphHeight = _rect.height() - _topPadding - _bottomPadding;
+    int graphWidth = _rect.width() - _leftPadding - _rightPadding;
+    QPoint bl = _rect.bottomLeft();
+
+    QPainterPath path;
+
+    if (_data.size() > 1)
+    {
+        double min = *std::min_element(_data.begin(), _data.end());
+        double max = *std::max_element(_data.begin(), _data.end());
+
         double range = max - min;
-        
+
         if (range < m_minRange)
         {
             min -= (m_minRange - range) / 2;
             max += (m_minRange - range) / 2;
         }
-        
-        int graphHeight = _event->rect().height() - (2 * m_padding);
-        int graphWidth = _event->rect().width() - (2 * m_padding);
-        
+
         double skip = 0;
-        
+
         if (min != max)
         {
             skip = double(graphHeight - 1) / (max - min);
         }
-        
-        double width = graphWidth / double(m_data.size() - 1);
-        
-        double x = m_padding;
-        double y = -m_padding;
-        
+
+        double width = graphWidth / double(_data.size() - 1);
+
+        double x = _leftPadding;
+        double y = -_bottomPadding;
+
         bool first = true;
-        
-        QPoint bl = _event->rect().bottomLeft();
-        
-        QList< double >::iterator i = m_data.begin();
-        QList< double >::iterator iend = m_data.end();
-        
-        for ( ; i != iend; ++i)
+
+        QList< double >::const_iterator i = _data.begin();
+        QList< double >::const_iterator iend = _data.end();
+
+        for (; i != iend; ++i)
         {
             double height = (*i - min) * skip;
-            
+
             if (first)
             {
                 y -= height;
                 first = false;
+
                 path.moveTo(bl.x() + int(x), bl.y() + int(y));
             }
             else
             {
                 x += width;
-                y = -m_padding - height;
-                
-                
+                y = -_bottomPadding - height;
+
                 path.lineTo(bl.x() + int(x), bl.y() + int(y));
             }
         }
     }
 
-    m_lock.unlock();
-    
     if (!path.isEmpty())
     {
-        painter.drawPath(path);
+        _painter.setRenderHint(QPainter::Antialiasing, true);
+        _painter.setPen(
+            QPen(m_color, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        _painter.drawPath(path);
+    }
+}
+
+void QSparkLineWidget::drawBars(const QList< double > &_data,
+                                QPainter &_painter,
+                                const QRect &_rect,
+                                int _leftPadding,
+                                int _rightPadding,
+                                int _topPadding,
+                                int _bottomPadding)
+{
+    _painter.setRenderHint(QPainter::Antialiasing, false);
+    _painter.setPen(
+        QPen(m_color, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+
+    int graphHeight = _rect.height() - _topPadding - _bottomPadding;
+    int graphWidth = _rect.width() - _leftPadding - _rightPadding;
+    QPoint bl = _rect.bottomLeft();
+
+    if (!_data.empty())
+    {
+        double min = *std::min_element(_data.begin(), _data.end());
+        double max = *std::max_element(_data.begin(), _data.end());
+
+        double range = max - min;
+
+        if (range < m_minRange)
+        {
+            max += m_minRange - range;
+        }
+
+        double skip = 0;
+
+        if (min != max)
+        {
+            skip = double(graphHeight - 1) / (max - min);
+        }
+
+        double width = graphWidth / double(_data.size() - 1);
+
+        double x = _leftPadding;
+        double y = -_bottomPadding;
+
+        QList< double >::const_iterator i = _data.begin();
+        QList< double >::const_iterator iend = _data.end();
+
+        for (; i != iend; ++i)
+        {
+            double height = (*i - min) * skip;
+            y = -_bottomPadding - height;
+
+            _painter.drawLine(bl.x() + x, bl.y() - _bottomPadding, bl.x() + x,
+                              bl.y() + y);
+
+            x += width;
+        }
     }
 }
 
@@ -164,14 +252,20 @@ void QSparkLineWidget::onObservationInserted(double _data)
             m_data.pop_front();
         }
     }
-    
+
     m_data.push_back(_data);
-    
+
     double min = *std::min_element(m_data.begin(), m_data.end());
     double max = *std::max_element(m_data.begin(), m_data.end());
     double change = m_data.back() - m_data.front();
-    
+
     setToolTip(QString("Min: %1\nMax: %2\nChange: %3").arg(min, max, change));
+    update();
+}
+
+void QSparkLineWidget::onDisplayTypeChanged(int _type)
+{
+    m_displayType = static_cast< DisplayType >(_type);
     update();
 }
 
@@ -196,7 +290,7 @@ void QSparkLineWidget::onPaddingChanged(int _padding)
 void QSparkLineWidget::onMaxObservationsChanged(int _max)
 {
     m_maxObservations = _max;
-    
+
     if (m_maxObservations > 2)
     {
         while (m_data.size() > m_maxObservations)
@@ -204,8 +298,8 @@ void QSparkLineWidget::onMaxObservationsChanged(int _max)
             m_data.pop_front();
         }
     }
-    
+
     update();
 }
 
-} // namespace dqtx
+}  // namespace dqtx
