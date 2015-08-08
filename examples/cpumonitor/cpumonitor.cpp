@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <QTimer>
+#include <QColor>
 
 cpumonitor::cpumonitor(int _argc, char *_argv[]) : m_application(_argc, _argv)
 {
@@ -37,6 +38,7 @@ void cpumonitor::on_timeout()
             m_table.setItem(
                 cpuIndex, 0, new QTableWidgetItem(QString(i.first.c_str())));
             i.second.m_sparklineWidget->setMinimum(0);
+            i.second.m_sparklineWidget->setColor(QColor(Qt::blue));
             m_table.setCellWidget(cpuIndex, 2, i.second.m_sparklineWidget);
             ++cpuIndex;
         }
