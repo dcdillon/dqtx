@@ -1,5 +1,8 @@
 TEMPLATE = lib
-TARGET = 
+TARGET =
+
+QT += widgets
+ 
 DEPENDPATH += . include src include/dqtx
 INCLUDEPATH += . ./include
 
