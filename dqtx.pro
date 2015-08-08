@@ -1,5 +1,5 @@
 TEMPLATE = lib
-TARGET =
+TARGET = dqtx
 
 QT += widgets
  

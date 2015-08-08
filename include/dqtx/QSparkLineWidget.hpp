@@ -54,6 +54,7 @@ class QSparkLineWidget : public QWidget
     void insertObservation(const double _data);
     void setDisplayType(const DisplayType _type);
     void setMinRange(const double _range);
+    void setMinimum(const double _min);
     void setColor(const QColor &_color);
     void setPadding(const int _padding);
     void setMaxObservations(const int _max);
@@ -84,14 +85,16 @@ class QSparkLineWidget : public QWidget
     QList< double > m_data;
     DisplayType m_displayType;
     double m_minRange;
+    double m_minimum;
     QColor m_color;
     int m_padding;
     int m_maxObservations;
 
-   signals:
+signals:
     void observationInserted(double _obs);
     void displayTypeChanged(int _type);
     void minRangeChanged(double _range);
+    void minimumChanged(double _min);
     void colorChanged(QColor _color);
     void paddingChanged(int _padding);
     void maxObservationsChanged(int _max);
@@ -100,6 +103,7 @@ class QSparkLineWidget : public QWidget
     void onObservationInserted(double _obs);
     void onDisplayTypeChanged(int _type);
     void onMinRangeChanged(double _range);
+    void onMinimumChanged(double _min);
     void onColorChanged(QColor _color);
     void onPaddingChanged(int _padding);
     void onMaxObservationsChanged(int _max);

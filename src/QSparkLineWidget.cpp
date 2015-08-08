@@ -35,6 +35,7 @@
 #include <iostream>
 #include <QPaintEvent>
 #include <algorithm>
+#include <limits>
 
 namespace dqtx
 {
@@ -42,21 +43,34 @@ QSparkLineWidget::QSparkLineWidget(QWidget *_parent, Qt::WindowFlags _flags)
     : QWidget(_parent, _flags)
     , m_displayType(DisplayTypeLine)
     , m_minRange(1)
+    , m_minimum(std::numeric_limits< double >::max())
     , m_color(QColor(Qt::black))
     , m_padding(5)
     , m_maxObservations(30)
 {
-    QObject::connect(this, SIGNAL(observationInserted(double)), this,
+    QObject::connect(this,
+                     SIGNAL(observationInserted(double)),
+                     this,
                      SLOT(onObservationInserted(double)));
-    QObject::connect(this, SIGNAL(displayTypeChanged(int)), this,
+    QObject::connect(this,
+                     SIGNAL(displayTypeChanged(int)),
+                     this,
                      SLOT(onDisplayTypeChanged(int)));
-    QObject::connect(this, SIGNAL(minRangeChanged(double)), this,
+    QObject::connect(this,
+                     SIGNAL(minRangeChanged(double)),
+                     this,
                      SLOT(onMinRangeChanged(double)));
-    QObject::connect(this, SIGNAL(colorChanged(QColor)), this,
-                     SLOT(onColorChanged(QColor)));
-    QObject::connect(this, SIGNAL(paddingChanged(int)), this,
-                     SLOT(onPaddingChanged(int)));
-    QObject::connect(this, SIGNAL(maxObservationsChanged(int)), this,
+    QObject::connect(this,
+                     SIGNAL(minimumChanged(double)),
+                     this,
+                     SLOT(onMinimumChanged(double)));
+    QObject::connect(
+        this, SIGNAL(colorChanged(QColor)), this, SLOT(onColorChanged(QColor)));
+    QObject::connect(
+        this, SIGNAL(paddingChanged(int)), this, SLOT(onPaddingChanged(int)));
+    QObject::connect(this,
+                     SIGNAL(maxObservationsChanged(int)),
+                     this,
                      SLOT(onMaxObservationsChanged(int)));
 }
 
@@ -73,6 +87,11 @@ void QSparkLineWidget::setDisplayType(const DisplayType _type)
 void QSparkLineWidget::setMinRange(const double _range)
 {
     emit minRangeChanged(_range);
+}
+
+void QSparkLineWidget::setMinimum(const double _min)
+{
+    emit minimumChanged(_min);
 }
 
 void QSparkLineWidget::setColor(const QColor &_color)
@@ -102,13 +121,23 @@ void QSparkLineWidget::paintEvent(QPaintEvent *_event)
     switch (m_displayType)
     {
         case DisplayTypeBars:
-            drawBars(m_data, painter, _event->rect(), m_padding, m_padding,
-                     m_padding, m_padding);
+            drawBars(m_data,
+                     painter,
+                     _event->rect(),
+                     m_padding,
+                     m_padding,
+                     m_padding,
+                     m_padding);
             break;
         case DisplayTypeLine:
         default:
-            drawLine(m_data, painter, _event->rect(), m_padding, m_padding,
-                     m_padding, m_padding);
+            drawLine(m_data,
+                     painter,
+                     _event->rect(),
+                     m_padding,
+                     m_padding,
+                     m_padding,
+                     m_padding);
             break;
     }
 }
@@ -130,14 +159,14 @@ void QSparkLineWidget::drawLine(const QList< double > &_data,
     if (_data.size() > 1)
     {
         double min = *std::min_element(_data.begin(), _data.end());
+        min = std::min(min, m_minimum);
         double max = *std::max_element(_data.begin(), _data.end());
 
         double range = max - min;
 
         if (range < m_minRange)
         {
-            min -= (m_minRange - range) / 2;
-            max += (m_minRange - range) / 2;
+            max += m_minRange - range;
         }
 
         double skip = 0;
@@ -206,6 +235,7 @@ void QSparkLineWidget::drawBars(const QList< double > &_data,
     if (!_data.empty())
     {
         double min = *std::min_element(_data.begin(), _data.end());
+        min = std::min(min, m_minimum);
         double max = *std::max_element(_data.begin(), _data.end());
 
         double range = max - min;
@@ -235,8 +265,8 @@ void QSparkLineWidget::drawBars(const QList< double > &_data,
             double height = (*i - min) * skip;
             y = -_bottomPadding - height;
 
-            _painter.drawLine(bl.x() + x, bl.y() - _bottomPadding, bl.x() + x,
-                              bl.y() + y);
+            _painter.drawLine(
+                bl.x() + x, bl.y() - _bottomPadding, bl.x() + x, bl.y() + y);
 
             x += width;
         }
@@ -259,7 +289,8 @@ void QSparkLineWidget::onObservationInserted(double _data)
     double max = *std::max_element(m_data.begin(), m_data.end());
     double change = m_data.back() - m_data.front();
 
-    setToolTip(QString("Min: %1\nMax: %2\nChange: %3").arg(min, max, change));
+    setToolTip(QString("Min: %1\nMax: %2\nChange: %3").arg(
+        QString::number(min), QString::number(max), QString::number(change)));
     update();
 }
 
@@ -272,6 +303,12 @@ void QSparkLineWidget::onDisplayTypeChanged(int _type)
 void QSparkLineWidget::onMinRangeChanged(double _range)
 {
     m_minRange = _range;
+    update();
+}
+
+void QSparkLineWidget::onMinimumChanged(double _min)
+{
+    m_minimum = _min;
     update();
 }
 
@@ -298,6 +335,13 @@ void QSparkLineWidget::onMaxObservationsChanged(int _max)
             m_data.pop_front();
         }
     }
+
+    double min = *std::min_element(m_data.begin(), m_data.end());
+    double max = *std::max_element(m_data.begin(), m_data.end());
+    double change = m_data.back() - m_data.front();
+
+    setToolTip(QString("Min: %1\nMax: %2\nChange: %3").arg(
+        QString::number(min), QString::number(max), QString::number(change)));
 
     update();
 }

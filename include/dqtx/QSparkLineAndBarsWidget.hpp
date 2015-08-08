@@ -47,7 +47,9 @@ class QSparkLineAndBarsWidget : public QWidget
     void insertObservation(const double _lineData, const double _barData);
 
     void setMinLineRange(const double _range);
+    void setLineMinimum(const double _min);
     void setMinBarRange(const double _range);
+    void setBarMinimum(const double _min);
     void setLineColor(const QColor &_color);
     void setBarColor(const QColor &_color);
     void setLeftPadding(const int _padding);
@@ -88,7 +90,9 @@ class QSparkLineAndBarsWidget : public QWidget
     QList< double > m_barData;
 
     double m_minLineRange;
+    double m_lineMinimum;
     double m_minBarRange;
+    double m_barMinimum;
 
     QColor m_lineColor;
     QColor m_barColor;
@@ -101,10 +105,12 @@ class QSparkLineAndBarsWidget : public QWidget
     int m_maxObservations;
     double m_barHeightRatio;
 
-   signals:
+signals:
     void observationInserted(double _line, double _bar);
     void minLineRangeChanged(double _range);
+    void lineMinimumChanged(double _min);
     void minBarRangeChanged(double _range);
+    void barMinimumChanged(double _min);
     void lineColorChanged(QColor _color);
     void barColorChanged(QColor _color);
     void leftPaddingChanged(int _padding);
@@ -118,7 +124,9 @@ class QSparkLineAndBarsWidget : public QWidget
    private slots:
     void onObservationInserted(double _line, double _bar);
     void onMinLineRangeChanged(double _range);
+    void onLineMinimumChanged(double _min);
     void onMinBarRangeChanged(double _range);
+    void onBarMinimumChanged(double _min);
     void onLineColorChanged(QColor _color);
     void onBarColorChanged(QColor _color);
     void onLeftPaddingChanged(int _padding);
