@@ -37,9 +37,23 @@ void cpumonitor::on_timeout()
         {
             m_table.setItem(
                 cpuIndex, 0, new QTableWidgetItem(QString(i.first.c_str())));
-            i.second.m_sparklineWidget->setMinimum(0);
-            i.second.m_sparklineWidget->setColor(QColor(Qt::blue));
-            m_table.setCellWidget(cpuIndex, 2, i.second.m_sparklineWidget);
+            
+            if (cpuIndex > 0)
+            {
+                i.second.m_sparklineWidget = new dqtx::QSparkLineWidget();
+                i.second.m_sparklineWidget->setMinimum(0);
+                i.second.m_sparklineWidget->setColor(QColor(Qt::blue));
+                m_table.setCellWidget(cpuIndex, 2, i.second.m_sparklineWidget);
+            }
+            else
+            {
+                i.second.m_sparkLineAndBarsWidget = new dqtx::QSparkLineAndBarsWidget();
+                i.second.m_sparkLineAndBarsWidget->setLineMinimum(0);
+                i.second.m_sparkLineAndBarsWidget->setBarMinimum(0);
+                i.second.m_sparkLineAndBarsWidget->setLineColor(QColor(Qt::blue));
+                m_table.setCellWidget(cpuIndex, 2, i.second.m_sparkLineAndBarsWidget);
+            }
+            
             ++cpuIndex;
         }
         
@@ -90,7 +104,6 @@ void cpumonitor::read_proc()
                 info.m_iowait = atol(values[4].c_str());
                 info.m_irq = atol(values[5].c_str());
                 info.m_softirq = atol(values[6].c_str());
-                info.m_sparklineWidget = new dqtx::QSparkLineWidget();
                 m_cpuInfoByCPU[name] = info;
             }
             else
@@ -116,7 +129,11 @@ void cpumonitor::read_proc()
                     delta_iowait + delta_irq + delta_softirq;
 
                 const double idlePercent = delta_idle / totalDelta;
-                i->second.m_sparklineWidget->insertObservation(1 - idlePercent);
+                
+                if (cpuIndex > 0)
+                {
+                    i->second.m_sparklineWidget->insertObservation(1 - idlePercent);
+                }
 
                 i->second.m_user = user;
                 i->second.m_nice = nice;
@@ -135,5 +152,6 @@ void cpumonitor::read_proc()
 
             ++cpuIndex;
         }
+        else if (
     }
 }

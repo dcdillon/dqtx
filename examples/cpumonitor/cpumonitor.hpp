@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <dqtx/QSparkLineWidget.hpp>
+#include <dqtx/QSparkLineAndBarsWidget.hpp>
 
 class cpu_info
 {
@@ -18,6 +19,7 @@ class cpu_info
     int64_t m_irq;
     int64_t m_softirq;
     dqtx::QSparkLineWidget *m_sparklineWidget;
+    dqtx::QSparkLineAndBarsWidget *m_sparkLineAndBarsWidget;
 };
 
 class cpumonitor : public QObject
