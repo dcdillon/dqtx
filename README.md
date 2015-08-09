@@ -10,4 +10,4 @@ QSparkLineAndBarsWidget is a widget that displays a spark line on top and a bar 
 #### cpumonitor
 cpumonitor is a small demo application that uses QSparklineWidget and QSparkLineAndBarsWidget to display CPU load on a system.  Each individual CPU is represented by a QSparkLineWidget.  The composite of all CPUs is represented by QSparkLineAndBarsWidget where the line represents the current CPU utilization and the bars represent currently running processes.
 
-![cpumonitor screenshot](images/cpumonitor.png)
+![ubuntu screenshot](images/cpumonitor_ubuntu.png) ![kubuntu screenshot](images/cpumonitor.png)
