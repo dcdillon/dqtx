@@ -23,8 +23,8 @@ install:
   - if [ $CXX == g++ ]; then sudo apt-get install g++-4.9; export CXX="g++-4.9"; fi
 
 script: 
-  - qmake && make
-  - cd examples/cpumonitor && qmake && make
+  - qmake -spec linux-cxx && make
+  - cd examples/cpumonitor && qmake -spec linux-cxx && make
 
 notifications:
   email:
