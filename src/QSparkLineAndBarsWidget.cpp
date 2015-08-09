@@ -84,25 +84,25 @@ QSparkLineAndBarsWidget::QSparkLineAndBarsWidget(QWidget *_parent,
                      this,
                      SLOT(onBarColorChanged(QColor)));
     QObject::connect(this,
-                     SIGNAL(leftPaddingChanged(double)),
+                     SIGNAL(leftPaddingChanged(int)),
                      this,
-                     SLOT(onLeftPaddingChanged(double)));
+                     SLOT(onLeftPaddingChanged(int)));
     QObject::connect(this,
-                     SIGNAL(rightPaddingChanged(double)),
+                     SIGNAL(rightPaddingChanged(int)),
                      this,
-                     SLOT(onRightPaddingChanged(double)));
+                     SLOT(onRightPaddingChanged(int)));
     QObject::connect(this,
-                     SIGNAL(topPaddingChanged(double)),
+                     SIGNAL(topPaddingChanged(int)),
                      this,
-                     SLOT(onTopPaddingChanged(double)));
+                     SLOT(onTopPaddingChanged(int)));
     QObject::connect(this,
-                     SIGNAL(bottomPaddingChanged(double)),
+                     SIGNAL(bottomPaddingChanged(int)),
                      this,
-                     SLOT(onBottomPaddingChanged(double)));
+                     SLOT(onBottomPaddingChanged(int)));
     QObject::connect(this,
-                     SIGNAL(paddingChanged(double, double, double, double)),
+                     SIGNAL(paddingChanged(int, int, int, int)),
                      this,
-                     SLOT(onPaddingChanged(double, double, double, double)));
+                     SLOT(onPaddingChanged(int, int, int, int)));
     QObject::connect(this,
                      SIGNAL(maxObservationsChanged(int)),
                      this,
@@ -198,9 +198,9 @@ void QSparkLineAndBarsWidget::paintEvent(QPaintEvent *_event)
     QPainter painter(this);
 
     const int graphHeight =
-        _event->rect().height() - m_topPadding - m_bottomPadding;
+        _event->rect().height();
     const int graphWidth =
-        _event->rect().width() - m_leftPadding - m_rightPadding;
+        _event->rect().width();
 
     const int barHeight = int(m_barHeightRatio * graphHeight);
     const int lineHeight = graphHeight - barHeight;

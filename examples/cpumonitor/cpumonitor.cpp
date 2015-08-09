@@ -68,6 +68,9 @@ void cpumonitor::read_proc()
     std::ifstream infile("/proc/stat");
 
     int cpuIndex = 0;
+    double combinedIdlePercent = 1;
+    int64_t procsRunning = 0;
+    
     while (infile.good())
     {
         std::string line;
@@ -89,7 +92,7 @@ void cpumonitor::read_proc()
                 values.push_back(tok);
             }
         }
-
+        
         if (name.find(std::string("cpu")) == 0)
         {
             auto i = m_cpuInfoByCPU.find(name);
@@ -134,6 +137,10 @@ void cpumonitor::read_proc()
                 {
                     i->second.m_sparklineWidget->insertObservation(1 - idlePercent);
                 }
+                else
+                {
+                    combinedIdlePercent = idlePercent;
+                }
 
                 i->second.m_user = user;
                 i->second.m_nice = nice;
@@ -152,6 +159,15 @@ void cpumonitor::read_proc()
 
             ++cpuIndex;
         }
-        else if (
+        else if (name == "procs_running")
+        {
+            procsRunning = atol(values[0].c_str());
+        }
+    }
+    
+    if (m_cpuInfoByCPU["cpu"].m_sparkLineAndBarsWidget)
+    {
+        m_cpuInfoByCPU["cpu"].m_sparkLineAndBarsWidget->insertObservation(1 - combinedIdlePercent,
+            procsRunning);
     }
 }

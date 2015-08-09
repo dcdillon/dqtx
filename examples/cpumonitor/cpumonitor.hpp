@@ -20,6 +20,19 @@ class cpu_info
     int64_t m_softirq;
     dqtx::QSparkLineWidget *m_sparklineWidget;
     dqtx::QSparkLineAndBarsWidget *m_sparkLineAndBarsWidget;
+    
+    inline cpu_info()
+        : m_user(0)
+        , m_nice(0)
+        , m_system(0)
+        , m_idle(0)
+        , m_iowait(0)
+        , m_irq(0)
+        , m_softirq(0)
+        , m_sparklineWidget(nullptr)
+        , m_sparkLineAndBarsWidget(nullptr)
+    {
+    }
 };
 
 class cpumonitor : public QObject
