@@ -24,8 +24,10 @@ install:
   - sudo apt-get install g++-4.9; export CXX="g++-4.9"
 
 script: 
-  - qmake QMAKE_CXX=$CXX && make
-  - cd examples/cpumonitor && qmake QMAKE_CXX=$CXX && make
+  - if [ $CXX == g++ ]; then qmake QMAKE_CXX=$CXX && make; fi
+  - if [ $CXX == g++ ]; then cd examples/cpumonitor && qmake QMAKE_CXX=$CXX && make; fi
+  - if [ $CXX == clang++ ]; then qmake -spec linux-clang && make; fi
+  - if [ $CXX == clang++ ]; then cd examples/cpumonitor && qmake -spec linux-clang && make; fi
 
 notifications:
   email:
