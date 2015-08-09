@@ -29,7 +29,7 @@ void cpumonitor::run()
 void cpumonitor::on_timeout()
 {
     static bool firstTime = true;
-    
+
     if (firstTime)
     {
         int cpuIndex = 0;
@@ -37,7 +37,7 @@ void cpumonitor::on_timeout()
         {
             m_table.setItem(
                 cpuIndex, 0, new QTableWidgetItem(QString(i.first.c_str())));
-            
+
             if (cpuIndex > 0)
             {
                 i.second.m_sparklineWidget = new dqtx::QSparkLineWidget();
@@ -47,16 +47,19 @@ void cpumonitor::on_timeout()
             }
             else
             {
-                i.second.m_sparkLineAndBarsWidget = new dqtx::QSparkLineAndBarsWidget();
+                i.second.m_sparkLineAndBarsWidget =
+                    new dqtx::QSparkLineAndBarsWidget();
                 i.second.m_sparkLineAndBarsWidget->setLineMinimum(0);
                 i.second.m_sparkLineAndBarsWidget->setBarMinimum(0);
-                i.second.m_sparkLineAndBarsWidget->setLineColor(QColor(Qt::blue));
-                m_table.setCellWidget(cpuIndex, 2, i.second.m_sparkLineAndBarsWidget);
+                i.second.m_sparkLineAndBarsWidget->setLineColor(
+                    QColor(Qt::blue));
+                m_table.setCellWidget(
+                    cpuIndex, 2, i.second.m_sparkLineAndBarsWidget);
             }
-            
+
             ++cpuIndex;
         }
-        
+
         firstTime = false;
     }
 
@@ -70,7 +73,7 @@ void cpumonitor::read_proc()
     int cpuIndex = 0;
     double combinedIdlePercent = 1;
     int64_t procsRunning = 0;
-    
+
     while (infile.good())
     {
         std::string line;
@@ -92,7 +95,7 @@ void cpumonitor::read_proc()
                 values.push_back(tok);
             }
         }
-        
+
         if (name.find(std::string("cpu")) == 0)
         {
             auto i = m_cpuInfoByCPU.find(name);
@@ -132,10 +135,11 @@ void cpumonitor::read_proc()
                     delta_iowait + delta_irq + delta_softirq;
 
                 const double idlePercent = delta_idle / totalDelta;
-                
+
                 if (cpuIndex > 0)
                 {
-                    i->second.m_sparklineWidget->insertObservation(1 - idlePercent);
+                    i->second.m_sparklineWidget->insertObservation(1 -
+                                                                   idlePercent);
                 }
                 else
                 {
@@ -164,10 +168,10 @@ void cpumonitor::read_proc()
             procsRunning = atol(values[0].c_str());
         }
     }
-    
+
     if (m_cpuInfoByCPU["cpu"].m_sparkLineAndBarsWidget)
     {
-        m_cpuInfoByCPU["cpu"].m_sparkLineAndBarsWidget->insertObservation(1 - combinedIdlePercent,
-            procsRunning);
+        m_cpuInfoByCPU["cpu"].m_sparkLineAndBarsWidget->insertObservation(
+            1 - combinedIdlePercent, procsRunning);
     }
 }

@@ -197,10 +197,8 @@ void QSparkLineAndBarsWidget::paintEvent(QPaintEvent *_event)
 {
     QPainter painter(this);
 
-    const int graphHeight =
-        _event->rect().height();
-    const int graphWidth =
-        _event->rect().width();
+    const int graphHeight = _event->rect().height();
+    const int graphWidth = _event->rect().width();
 
     const int barHeight = int(m_barHeightRatio * graphHeight);
     const int lineHeight = graphHeight - barHeight;
