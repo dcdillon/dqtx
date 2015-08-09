@@ -1,4 +1,4 @@
-# dqtx
+# dqtx ![build status](https://travis-ci.org/dcdillon/dqtx.svg?branch=master)
 A library of Qt extensions I have found useful
 
 ## Widgets
