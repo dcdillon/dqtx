@@ -17,7 +17,7 @@ before_install:
   - echo $LANG
   - echo $LC_ALL
   - sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
-  - sudo apt-get update && sudo apt-get install -y qtbase5-dev qtv-default qttools5-dev-tools
+  - sudo apt-get update && sudo apt-get install -y qtbase5-dev qt5-default qttools5-dev-tools
 
 install:
   - if [ $CXX == g++ ]; then sudo apt-get install g++-4.9; export CXX="g++-4.9"; fi
