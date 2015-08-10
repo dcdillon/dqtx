@@ -10,10 +10,12 @@ VERSION = 0.0.1
 
 # Input
 HEADERS += include/dqtx/QSparkLineWidget.hpp \
-           include/dqtx/QSparkLineAndBarsWidget.hpp
+           include/dqtx/QSparkLineAndBarsWidget.hpp \
+           include/dqtx/QDensityWidget.hpp
 
 SOURCES += src/QSparkLineWidget.cpp \
-           src/QSparkLineAndBarsWidget.cpp
+           src/QSparkLineAndBarsWidget.cpp \
+           src/QDensityWidget.cpp
 
 target.path=/usr/local/lib
 INSTALLS += target

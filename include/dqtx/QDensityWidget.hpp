@@ -66,15 +66,13 @@ class QDensityWidget : public QWidget
     void paintEvent(QPaintEvent *_event);
 
    private:
-    void drawLine(const QList< double > &_data,
-                  QPainter &_painter,
+    void drawLine(QPainter &_painter,
                   const QRect &_rect,
                   int _leftPadding,
                   int _rightPadding,
                   int _topPadding,
                   int _bottomPadding);
-    void drawBars(const QList< double > &_data,
-                  QPainter &_painter,
+    void drawBars(QPainter &_painter,
                   const QRect &_rect,
                   int _leftPadding,
                   int _rightPadding,
@@ -82,7 +80,7 @@ class QDensityWidget : public QWidget
                   int _bottomPadding);
 
    private:
-    boost::accumulators::accumulator_set< double, boost::accumulators::stats< tag::density > > m_accumulator;
+    boost::accumulators::accumulator_set< double, boost::accumulators::stats< boost::accumulators::tag::density > > m_accumulator;
     DisplayType m_displayType;
     QColor m_color;
     int m_padding;

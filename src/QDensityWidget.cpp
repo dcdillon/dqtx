@@ -36,12 +36,13 @@
 #include <QPaintEvent>
 #include <algorithm>
 #include <limits>
+#include <stdint.h>
 
 namespace dqtx
 {
 QDensityWidget::QDensityWidget(QWidget *_parent, Qt::WindowFlags _flags)
     : QWidget(_parent, _flags)
-    , m_accumulator(boost::accumulators::tag::density::num_bins = 30);
+    , m_accumulator(boost::accumulators::tag::density::num_bins = 30, boost::accumulators::tag::density::cache_size = 10)
     , m_displayType(DisplayTypeLine)
     , m_color(QColor(Qt::black))
     , m_padding(5)
@@ -124,7 +125,7 @@ void QDensityWidget::drawLine(QPainter &_painter,
 
     QPainterPath path;
 
-    boost::accumulators::accumulator_set< double boost::accumulators::stats< tag::density > >::histogram_type
+    boost::iterator_range< std::vector< std::pair<double, double> >::iterator >
         histogram = boost::accumulators::density(m_accumulator);
         
     QList< QPair< double, double > > points;
@@ -133,7 +134,7 @@ void QDensityWidget::drawLine(QPainter &_painter,
     double minY = std::numeric_limits< double >::max();
     double maxY = std::numeric_limits< double >::min();
     
-    for (int32_t i = 0; i < histogram.size(); ++i)
+    for (uint32_t i = 0; i < histogram.size(); ++i)
     {
         const double x = histogram[i].first;
         const double y = histogram[i].second;
