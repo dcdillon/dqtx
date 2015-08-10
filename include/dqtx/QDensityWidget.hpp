@@ -36,7 +36,9 @@
 #include <QList>
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
-#include <boost/accumulators/statistics/density.hpp>
+#include <boost/accumulators/statistics/tail_quantile.hpp>
+#include <boost/accumulators/statistics/variance.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
 
 namespace dqtx
 {
@@ -44,18 +46,10 @@ class QDensityWidget : public QWidget
 {
     Q_OBJECT
    public:
-    enum DisplayType
-    {
-        DisplayTypeLine = 1,
-        DisplayTypeBars = 2
-    };
-
-   public:
     QDensityWidget(QWidget *_parent = 0, Qt::WindowFlags _flags = 0);
 
    public:
     void insertObservation(const double _data);
-    void setDisplayType(const DisplayType _type);
     void setColor(const QColor &_color);
     void setPadding(const int _padding);
 
@@ -64,6 +58,11 @@ class QDensityWidget : public QWidget
 
    protected:
     void paintEvent(QPaintEvent *_event);
+    
+private:
+    double density(double _x);
+    double normal(double _x);
+    double phi(double _x);
 
    private:
     void drawLine(QPainter &_painter,
@@ -72,29 +71,20 @@ class QDensityWidget : public QWidget
                   int _rightPadding,
                   int _topPadding,
                   int _bottomPadding);
-    void drawBars(QPainter &_painter,
-                  const QRect &_rect,
-                  int _leftPadding,
-                  int _rightPadding,
-                  int _topPadding,
-                  int _bottomPadding);
-
    private:
-    boost::accumulators::accumulator_set< double, boost::accumulators::stats< boost::accumulators::tag::density > > m_accumulator;
-    DisplayType m_displayType;
+    QList< double > m_data;
+    boost::accumulators::accumulator_set< double, boost::accumulators::stats< boost::accumulators::tag::variance, boost::accumulators::tag::mean, boost::accumulators::tag::tail_quantile< boost::accumulators::right > > > m_accumulator;
     QColor m_color;
     int m_padding;
-    int m_maxObservations;
-
+    double m_bandwidth;
+    
 signals:
     void observationInserted(double _obs);
-    void displayTypeChanged(int _type);
     void colorChanged(QColor _color);
     void paddingChanged(int _padding);
 
    private slots:
     void onObservationInserted(double _obs);
-    void onDisplayTypeChanged(int _type);
     void onColorChanged(QColor _color);
     void onPaddingChanged(int _padding);
 };
