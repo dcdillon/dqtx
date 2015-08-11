@@ -23,7 +23,7 @@ void cpumonitor::run()
     timer->setInterval(1000);
     connect(timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
     timer->start();
-    
+
     m_application.exec();
 }
 
@@ -36,8 +36,8 @@ void cpumonitor::on_timeout()
         int cpuIndex = 0;
         for (auto &i : m_cpuInfoByCPU)
         {
-            m_table.setItem(
-                cpuIndex, 0, new QTableWidgetItem(QString(i.first.c_str())));
+            m_table.setItem(cpuIndex, 0,
+                            new QTableWidgetItem(QString(i.first.c_str())));
 
             if (cpuIndex > 0)
             {
@@ -54,13 +54,13 @@ void cpumonitor::on_timeout()
                 i.second.m_sparkLineAndBarsWidget->setBarMinimum(0);
                 i.second.m_sparkLineAndBarsWidget->setLineColor(
                     QColor(Qt::blue));
-                m_table.setCellWidget(
-                    cpuIndex, 2, i.second.m_sparkLineAndBarsWidget);
+                m_table.setCellWidget(cpuIndex, 2,
+                                      i.second.m_sparkLineAndBarsWidget);
             }
 
             ++cpuIndex;
         }
-        
+
         cpuIndex = 1;
         for (auto &i : m_schedInfoByCPU)
         {
@@ -165,8 +165,7 @@ void cpumonitor::read_proc_stat()
                 i->second.m_softirq = softirq;
 
                 m_table.setItem(
-                    cpuIndex,
-                    1,
+                    cpuIndex, 1,
                     new QTableWidgetItem(QString("%1%").arg(
                         QString::number((1 - idlePercent) * 100, 'f', 1))));
             }
@@ -227,7 +226,7 @@ void cpumonitor::read_proc_schedstat()
             else
             {
                 const int64_t tasks = atol(values[8].c_str());
-                
+
                 const int64_t delta_tasks = tasks - i->second.m_tasks;
 
                 i->second.m_densityWidget->insertObservation(delta_tasks);
@@ -239,5 +238,3 @@ void cpumonitor::read_proc_schedstat()
         }
     }
 }
-
-

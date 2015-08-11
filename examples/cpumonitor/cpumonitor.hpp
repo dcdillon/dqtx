@@ -10,15 +10,11 @@
 
 class cpu_sched_info
 {
-public:
+   public:
     int64_t m_tasks;
     dqtx::QDensityWidget *m_densityWidget;
-    
-    inline cpu_sched_info()
-        : m_tasks(0)
-        , m_densityWidget(nullptr)
-    {
-    }
+
+    inline cpu_sched_info() : m_tasks(0), m_densityWidget(nullptr) {}
 };
 
 class cpu_info
@@ -34,7 +30,7 @@ class cpu_info
     int64_t m_softirq;
     dqtx::QSparkLineWidget *m_sparklineWidget;
     dqtx::QSparkLineAndBarsWidget *m_sparkLineAndBarsWidget;
-    
+
     inline cpu_info()
         : m_user(0)
         , m_nice(0)

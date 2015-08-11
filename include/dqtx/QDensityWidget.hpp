@@ -52,17 +52,17 @@ class QDensityWidget : public QWidget
     void insertObservation(const double _data);
     void setColor(const QColor &_color);
     void setPadding(const int _padding);
+    void setMaxObservations(const int _max);
 
    public:
     QSize sizeHint() const;
 
    protected:
     void paintEvent(QPaintEvent *_event);
-    
-private:
+
+   private:
     double density(double _x);
     double normal(double _x);
-    double phi(double _x);
 
    private:
     void drawLine(QPainter &_painter,
@@ -71,22 +71,35 @@ private:
                   int _rightPadding,
                   int _topPadding,
                   int _bottomPadding);
+
    private:
     QList< double > m_data;
-    boost::accumulators::accumulator_set< double, boost::accumulators::stats< boost::accumulators::tag::variance, boost::accumulators::tag::mean, boost::accumulators::tag::tail_quantile< boost::accumulators::right > > > m_accumulator;
+    boost::accumulators::accumulator_set<
+        double,
+        boost::accumulators::stats< boost::accumulators::tag::variance,
+                                    boost::accumulators::tag::mean,
+                                    boost::accumulators::tag::tail_quantile<
+                                        boost::accumulators::right > > >
+        m_accumulator;
     QColor m_color;
     int m_padding;
     double m_bandwidth;
     int m_maxObservations;
-    
+
 signals:
     void observationInserted(double _obs);
     void colorChanged(QColor _color);
     void paddingChanged(int _padding);
+    void maxObservationsChanged(int _max);
 
    private slots:
     void onObservationInserted(double _obs);
     void onColorChanged(QColor _color);
     void onPaddingChanged(int _padding);
+    void onMaxObservationsChanged(int _max);
+
+   private:
+    void updateBandwidth();
+    void updateToolTip();
 };
 }  // namespace dqtx

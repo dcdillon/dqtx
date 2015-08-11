@@ -42,20 +42,19 @@ namespace dqtx
 {
 QDensityWidget::QDensityWidget(QWidget *_parent, Qt::WindowFlags _flags)
     : QWidget(_parent, _flags)
-    , m_accumulator(boost::accumulators::tag::tail<boost::accumulators::right>::cache_size = 60)
+    , m_accumulator(boost::accumulators::tag::tail<
+                        boost::accumulators::right >::cache_size = 60)
     , m_color(QColor(Qt::black))
     , m_padding(5)
     , m_bandwidth(.5)
     , m_maxObservations(600)
 {
-    QObject::connect(this,
-                     SIGNAL(observationInserted(double)),
-                     this,
+    QObject::connect(this, SIGNAL(observationInserted(double)), this,
                      SLOT(onObservationInserted(double)));
-    QObject::connect(
-        this, SIGNAL(colorChanged(QColor)), this, SLOT(onColorChanged(QColor)));
-    QObject::connect(
-        this, SIGNAL(paddingChanged(int)), this, SLOT(onPaddingChanged(int)));
+    QObject::connect(this, SIGNAL(colorChanged(QColor)), this,
+                     SLOT(onColorChanged(QColor)));
+    QObject::connect(this, SIGNAL(paddingChanged(int)), this,
+                     SLOT(onPaddingChanged(int)));
 }
 
 void QDensityWidget::insertObservation(const double _data)
@@ -68,42 +67,37 @@ void QDensityWidget::setColor(const QColor &_color)
     emit colorChanged(_color);
 }
 
-void QDensityWidget::setPadding(int _padding)
+void QDensityWidget::setPadding(int _padding) { emit paddingChanged(_padding); }
+
+void QDensityWidget::setMaxObservations(int _max)
 {
-    emit paddingChanged(_padding);
+    emit maxObservationsChanged(_max);
 }
 
-QSize QDensityWidget::sizeHint() const
-{
-    return QSize(68, 29);
-}
+QSize QDensityWidget::sizeHint() const { return QSize(68, 29); }
 
 void QDensityWidget::paintEvent(QPaintEvent *_event)
 {
     QPainter painter(this);
 
-    drawLine(painter,
-             _event->rect(),
-             m_padding,
-             m_padding,
-             m_padding,
+    drawLine(painter, _event->rect(), m_padding, m_padding, m_padding,
              m_padding);
 }
 
 double QDensityWidget::density(double _x)
 {
     double sum = 0;
-    
+
     QList< double >::iterator i = m_data.begin();
     QList< double >::iterator iend = m_data.end();
-    
-    for ( ; i != iend; ++i)
+
+    for (; i != iend; ++i)
     {
         sum += normal((_x - *i) / m_bandwidth);
     }
-    
+
     sum *= 1 / (m_data.size() * m_bandwidth);
-    
+
     return sum;
 }
 
@@ -113,34 +107,34 @@ double QDensityWidget::normal(double _x)
 }
 
 void QDensityWidget::drawLine(QPainter &_painter,
-                                const QRect &_rect,
-                                int _leftPadding,
-                                int _rightPadding,
-                                int _topPadding,
-                                int _bottomPadding)
+                              const QRect &_rect,
+                              int _leftPadding,
+                              int _rightPadding,
+                              int _topPadding,
+                              int _bottomPadding)
 {
     int graphHeight = _rect.height() - _topPadding - _bottomPadding;
     int graphWidth = _rect.width() - _leftPadding - _rightPadding;
     QPoint bl = _rect.bottomLeft();
 
     QPainterPath path;
-    
+
     double minX = *std::min_element(m_data.begin(), m_data.end());
     double maxX = *std::max_element(m_data.begin(), m_data.end());
     const double extendX = .2 * (maxX - minX);
     minX -= extendX;
     maxX += extendX;
-    
+
     double minY = std::numeric_limits< double >::max();
     double maxY = std::numeric_limits< double >::min();
-    
+
     const double xStep = (maxX - minX) / double(graphWidth - 1);
-    
+
     const double mean = boost::accumulators::mean(m_accumulator);
-    
+
     double minDiffToMean = std::numeric_limits< double >::max();
     double meanX = 0;
-    
+
     QList< QPair< double, double > > points;
     for (double x = minX; x < maxX; x += xStep)
     {
@@ -148,7 +142,7 @@ void QDensityWidget::drawLine(QPainter &_painter,
         points.push_back(QPair< double, double >(x, y));
         minY = std::min(minY, y);
         maxY = std::max(maxY, y);
-        
+
         const double diffToMean = fabs(mean - x);
         if (diffToMean < minDiffToMean)
         {
@@ -158,17 +152,17 @@ void QDensityWidget::drawLine(QPainter &_painter,
     }
 
     const double yStep = double(graphHeight - 1) / (maxY);
-    
+
     bool first = true;
     QList< QPair< double, double > >::iterator i = points.begin();
     QList< QPair< double, double > >::iterator iend = points.end();
-    
+
     int x = _leftPadding;
     double y = -_bottomPadding;
-    for ( ; i != iend; ++i)
+    for (; i != iend; ++i)
     {
         y = -_bottomPadding - (yStep * i->second);
-        
+
         if (first)
         {
             path.moveTo(int(bl.x() + x), int(bl.y() + y));
@@ -178,18 +172,19 @@ void QDensityWidget::drawLine(QPainter &_painter,
         {
             path.lineTo(int(bl.x() + x), int(bl.y() + y));
         }
-        
+
         if (i->first == meanX)
         {
             _painter.setRenderHint(QPainter::Antialiasing, false);
-            _painter.setPen(
-                QPen(QColor(Qt::lightGray), 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-            _painter.drawLine(bl.x() + x, bl.y() - _bottomPadding, bl.x() + x, bl.y() - _bottomPadding - graphHeight);
+            _painter.setPen(QPen(QColor(Qt::lightGray), 1, Qt::SolidLine,
+                                 Qt::RoundCap, Qt::RoundJoin));
+            _painter.drawLine(bl.x() + x, bl.y() - _bottomPadding, bl.x() + x,
+                              bl.y() - _bottomPadding - graphHeight);
         }
-        
+
         ++x;
     }
-    
+
     if (!path.isEmpty())
     {
         _painter.setRenderHint(QPainter::Antialiasing, true);
@@ -197,7 +192,6 @@ void QDensityWidget::drawLine(QPainter &_painter,
             QPen(m_color, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         _painter.drawPath(path);
     }
-    
 }
 
 void QDensityWidget::onObservationInserted(double _data)
@@ -205,44 +199,40 @@ void QDensityWidget::onObservationInserted(double _data)
     if (m_data.size() == m_maxObservations)
     {
         QList< double > newList;
-        boost::accumulators::accumulator_set< double, boost::accumulators::stats< boost::accumulators::tag::variance, boost::accumulators::tag::mean, boost::accumulators::tag::tail_quantile< boost::accumulators::right > > > accumulator(boost::accumulators::tag::tail<boost::accumulators::right>::cache_size = 60);
-        
+        boost::accumulators::accumulator_set<
+            double,
+            boost::accumulators::stats< boost::accumulators::tag::variance,
+                                        boost::accumulators::tag::mean,
+                                        boost::accumulators::tag::tail_quantile<
+                                            boost::accumulators::right > > >
+            accumulator(boost::accumulators::tag::tail<
+                            boost::accumulators::right >::cache_size = 60);
+
         int index = 0;
-        
+
         QList< double >::iterator i = m_data.begin();
         QList< double >::iterator iend = m_data.end();
-        
-        for ( ; i != iend; ++i)
+
+        for (; i != iend; ++i)
         {
             if (index % 2)
             {
                 newList.push_back(*i);
                 accumulator(*i);
             }
-            
+
             ++index;
         }
-        
+
         m_data = newList;
         m_accumulator = accumulator;
     }
-    
+
     m_data.push_back(_data);
     m_accumulator(_data);
-    
-    const double variance = boost::accumulators::variance(m_accumulator);
-    const double sigma = sqrt(variance);
-    const double interQuartile = boost::accumulators::quantile(m_accumulator, boost::accumulators::quantile_probability = .75)
-        - boost::accumulators::quantile(m_accumulator, boost::accumulators::quantile_probability = .25);
-    const double min = *std::min_element(m_data.begin(), m_data.end());
-    const double max = *std::max_element(m_data.begin(), m_data.end());
-    const double mean = boost::accumulators::mean(m_accumulator);
-    
-    m_bandwidth = .9 * pow(m_data.size(), -.2) * (std::min(sigma, interQuartile / 1.34));
-    
-    setToolTip(QString("%1: %2\n%3: %4\nMin: %5\nMax: %6\nbw: %7").arg(QString(QChar(0x03BC)),
-        QString::number(mean), QString(QChar(0x03C3)),
-        QString::number(sigma), QString::number(min), QString::number(max), QString::number(m_bandwidth)));
+
+    updateBandwidth();
+    updateToolTip();
     update();
 }
 
@@ -256,6 +246,76 @@ void QDensityWidget::onPaddingChanged(int _padding)
 {
     m_padding = _padding;
     update();
+}
+
+void QDensityWidget::onMaxObservationsChanged(int _max)
+{
+    m_maxObservations = _max;
+
+    while (m_data.size() > m_maxObservations)
+    {
+        QList< double > newList;
+        boost::accumulators::accumulator_set<
+            double,
+            boost::accumulators::stats< boost::accumulators::tag::variance,
+                                        boost::accumulators::tag::mean,
+                                        boost::accumulators::tag::tail_quantile<
+                                            boost::accumulators::right > > >
+            accumulator(boost::accumulators::tag::tail<
+                            boost::accumulators::right >::cache_size = 60);
+
+        int index = 0;
+
+        QList< double >::iterator i = m_data.begin();
+        QList< double >::iterator iend = m_data.end();
+
+        for (; i != iend; ++i)
+        {
+            if (index % 2)
+            {
+                newList.push_back(*i);
+                accumulator(*i);
+            }
+
+            ++index;
+        }
+
+        m_data = newList;
+        m_accumulator = accumulator;
+    }
+
+    updateBandwidth();
+    updateToolTip();
+    update();
+}
+
+void QDensityWidget::updateBandwidth()
+{
+    const double variance = boost::accumulators::variance(m_accumulator);
+    const double interQuartile =
+        boost::accumulators::quantile(
+            m_accumulator, boost::accumulators::quantile_probability = .75) -
+        boost::accumulators::quantile(
+            m_accumulator, boost::accumulators::quantile_probability = .25);
+    const double sigma = sqrt(variance);
+
+    m_bandwidth =
+        .9 * pow(m_data.size(), -.2) * (std::min(sigma, interQuartile / 1.34));
+}
+
+void QDensityWidget::updateToolTip()
+{
+    const double variance = boost::accumulators::variance(m_accumulator);
+    const double sigma = sqrt(variance);
+    const double min = *std::min_element(m_data.begin(), m_data.end());
+    const double max = *std::max_element(m_data.begin(), m_data.end());
+    const double mean = boost::accumulators::mean(m_accumulator);
+
+    setToolTip(QString("%1: %2\n%3: %4\nMin: %5\nMax: %6\nbw: %7")
+                   .arg(QString(QChar(0x03BC)), QString::number(mean),
+                        QString(QChar(0x03C3)), QString::number(sigma),
+                        QString::number(min), QString::number(max),
+                        QString::number(m_bandwidth)));
 }
 
 }  // namespace dqtx
