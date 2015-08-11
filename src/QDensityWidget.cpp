@@ -42,8 +42,7 @@ namespace dqtx
 {
 QDensityWidget::QDensityWidget(QWidget *_parent, Qt::WindowFlags _flags)
     : QWidget(_parent, _flags)
-    , m_accumulator(boost::accumulators::tag::tail<
-                        boost::accumulators::right >::cache_size = 60)
+    , m_accumulator()
     , m_color(QColor(Qt::black))
     , m_padding(5)
     , m_bandwidth(.5)
@@ -204,11 +203,8 @@ void QDensityWidget::onObservationInserted(double _data)
         boost::accumulators::accumulator_set<
             double,
             boost::accumulators::stats< boost::accumulators::tag::variance,
-                                        boost::accumulators::tag::mean,
-                                        boost::accumulators::tag::tail_quantile<
-                                            boost::accumulators::right > > >
-            accumulator(boost::accumulators::tag::tail<
-                            boost::accumulators::right >::cache_size = 60);
+                                        boost::accumulators::tag::mean > >
+            accumulator;
 
         int index = 0;
 
@@ -260,11 +256,8 @@ void QDensityWidget::onMaxObservationsChanged(int _max)
         boost::accumulators::accumulator_set<
             double,
             boost::accumulators::stats< boost::accumulators::tag::variance,
-                                        boost::accumulators::tag::mean,
-                                        boost::accumulators::tag::tail_quantile<
-                                            boost::accumulators::right > > >
-            accumulator(boost::accumulators::tag::tail<
-                            boost::accumulators::right >::cache_size = 60);
+                                        boost::accumulators::tag::mean > >
+            accumulator;
 
         int index = 0;
 
@@ -294,15 +287,10 @@ void QDensityWidget::onMaxObservationsChanged(int _max)
 void QDensityWidget::updateBandwidth()
 {
     const double variance = boost::accumulators::variance(m_accumulator);
-    const double interQuartile =
-        boost::accumulators::quantile(
-            m_accumulator, boost::accumulators::quantile_probability = .75) -
-        boost::accumulators::quantile(
-            m_accumulator, boost::accumulators::quantile_probability = .25);
     const double sigma = sqrt(variance);
 
-    m_bandwidth =
-        .9 * pow(m_data.size(), -.2) * (std::min(sigma, interQuartile / 1.34));
+    m_bandwidth = .9 * pow(m_data.size(), -.2) *
+                  sigma;  //(std::min(sigma, interQuartile / 1.34));
 }
 
 void QDensityWidget::updateToolTip()

@@ -77,9 +77,7 @@ class QDensityWidget : public QWidget
     boost::accumulators::accumulator_set<
         double,
         boost::accumulators::stats< boost::accumulators::tag::variance,
-                                    boost::accumulators::tag::mean,
-                                    boost::accumulators::tag::tail_quantile<
-                                        boost::accumulators::right > > >
+                                    boost::accumulators::tag::mean > >
         m_accumulator;
     QColor m_color;
     int m_padding;
