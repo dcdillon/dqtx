@@ -77,6 +77,7 @@ private:
     QColor m_color;
     int m_padding;
     double m_bandwidth;
+    int m_maxObservations;
     
 signals:
     void observationInserted(double _obs);

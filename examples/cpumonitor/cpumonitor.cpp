@@ -9,12 +9,13 @@
 
 cpumonitor::cpumonitor(int _argc, char *_argv[]) : m_application(_argc, _argv)
 {
-    read_proc();
+    read_proc_stat();
+    read_proc_schedstat();
 }
 
 void cpumonitor::run()
 {
-    m_table.setColumnCount(3);
+    m_table.setColumnCount(4);
     m_table.setRowCount(m_cpuInfoByCPU.size());
     m_table.show();
 
@@ -22,7 +23,7 @@ void cpumonitor::run()
     timer->setInterval(1000);
     connect(timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
     timer->start();
-
+    
     m_application.exec();
 }
 
@@ -59,14 +60,23 @@ void cpumonitor::on_timeout()
 
             ++cpuIndex;
         }
+        
+        cpuIndex = 1;
+        for (auto &i : m_schedInfoByCPU)
+        {
+            i.second.m_densityWidget = new dqtx::QDensityWidget();
+            m_table.setCellWidget(cpuIndex, 3, i.second.m_densityWidget);
+            ++cpuIndex;
+        }
 
         firstTime = false;
     }
 
-    read_proc();
+    read_proc_stat();
+    read_proc_schedstat();
 }
 
-void cpumonitor::read_proc()
+void cpumonitor::read_proc_stat()
 {
     std::ifstream infile("/proc/stat");
 
@@ -175,3 +185,59 @@ void cpumonitor::read_proc()
             1 - combinedIdlePercent, procsRunning);
     }
 }
+
+void cpumonitor::read_proc_schedstat()
+{
+    std::ifstream infile("/proc/schedstat");
+
+    int cpuIndex = 1;
+
+    while (infile.good())
+    {
+        std::string line;
+        std::getline(infile, line);
+
+        char buf[16384];
+        strcpy(buf, line.c_str());
+
+        char *tok = strtok(buf, " ");
+        std::string name;
+        std::vector< std::string > values;
+
+        if (tok)
+        {
+            name = tok;
+
+            while ((tok = strtok(NULL, " ")))
+            {
+                values.push_back(tok);
+            }
+        }
+
+        if (name.find(std::string("cpu")) == 0)
+        {
+            auto i = m_schedInfoByCPU.find(name);
+
+            if (i == m_schedInfoByCPU.end())
+            {
+                cpu_sched_info info;
+                info.m_tasks = atol(values[8].c_str());
+                m_schedInfoByCPU[name] = info;
+            }
+            else
+            {
+                const int64_t tasks = atol(values[8].c_str());
+                
+                const int64_t delta_tasks = tasks - i->second.m_tasks;
+
+                i->second.m_densityWidget->insertObservation(delta_tasks);
+
+                i->second.m_tasks = tasks;
+            }
+
+            ++cpuIndex;
+        }
+    }
+}
+
+

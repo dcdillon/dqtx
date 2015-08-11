@@ -379,7 +379,8 @@ void QSparkLineAndBarsWidget::onObservationInserted(double _line, double _bar)
     double max = *std::max_element(m_lineData.begin(), m_lineData.end());
     double change = m_lineData.back() - m_lineData.front();
 
-    setToolTip(QString("Min: %1\nMax: %2\nChange: %3").arg(min, max, change));
+    setToolTip(QString("Min: %1\nMax: %2\nChange: %3").arg(QString::number(min),
+        QString::number(max), QString::number(change)));
 
     update();
 }
