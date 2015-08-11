@@ -55,6 +55,8 @@ QDensityWidget::QDensityWidget(QWidget *_parent, Qt::WindowFlags _flags)
                      SLOT(onColorChanged(QColor)));
     QObject::connect(this, SIGNAL(paddingChanged(int)), this,
                      SLOT(onPaddingChanged(int)));
+    QObject::connect(this, SIGNAL(maxObservationsChanged(int)), this,
+                     SLOT(onMaxObservationsChanged(int)));
 }
 
 void QDensityWidget::insertObservation(const double _data)
