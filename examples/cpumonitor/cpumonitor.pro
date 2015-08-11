@@ -10,7 +10,7 @@ QT += widgets
 INCLUDEPATH += .
 
 QMAKE_CXXFLAGS += -std=c++11 -g -pthread -Wno-unused-parameter
-
+QMAKE_LFLAGS += -Wl,-rpath,../../
 QMAKE_INCDIR += ../../include
 QMAKE_LIBDIR += ../../
 QMAKE_LIBS += -ldqtx
