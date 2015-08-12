@@ -94,7 +94,7 @@ double QDensityWidget::density(double _x)
 
     for (; i != iend; ++i)
     {
-        sum += silverman((_x - *i) / m_bandwidth);
+        sum += normal((_x - *i) / m_bandwidth);
     }
 
     sum *= 1 / (m_data.size() * m_bandwidth);
