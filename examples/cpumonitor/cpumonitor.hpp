@@ -8,15 +8,6 @@
 #include <dqtx/QSparkLineAndBarsWidget.hpp>
 #include <dqtx/QDensityWidget.hpp>
 
-class cpu_sched_info
-{
-   public:
-    int64_t m_tasks;
-    dqtx::QDensityWidget *m_densityWidget;
-
-    inline cpu_sched_info() : m_tasks(0), m_densityWidget(nullptr) {}
-};
-
 class cpu_info
 {
    public:
@@ -52,7 +43,6 @@ class cpumonitor : public QObject
     QApplication m_application;
     QTableWidget m_table;
     std::map< std::string, cpu_info > m_cpuInfoByCPU;
-    std::map< std::string, cpu_sched_info > m_schedInfoByCPU;
 
    public:
     cpumonitor(int _argc, char *_argv[]);
@@ -60,7 +50,6 @@ class cpumonitor : public QObject
 
    protected:
     void read_proc_stat();
-    void read_proc_schedstat();
 
    private slots:
     void on_timeout();

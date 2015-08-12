@@ -94,7 +94,7 @@ double QDensityWidget::density(double _x)
 
     for (; i != iend; ++i)
     {
-        sum += normal((_x - *i) / m_bandwidth);
+        sum += silverman((_x - *i) / m_bandwidth);
     }
 
     sum *= 1 / (m_data.size() * m_bandwidth);
@@ -114,84 +114,87 @@ void QDensityWidget::drawLine(QPainter &_painter,
                               int _topPadding,
                               int _bottomPadding)
 {
-    int graphHeight = _rect.height() - _topPadding - _bottomPadding;
-    int graphWidth = _rect.width() - _leftPadding - _rightPadding;
-    QPoint bl = _rect.bottomLeft();
-
-    QPainterPath path;
-
-    double minX = *std::min_element(m_data.begin(), m_data.end());
-    double maxX = *std::max_element(m_data.begin(), m_data.end());
-    const double extendX = .2 * (maxX - minX);
-    minX -= extendX;
-    maxX += extendX;
-
-    double minY = std::numeric_limits< double >::max();
-    double maxY = std::numeric_limits< double >::min();
-
-    const double xStep = (maxX - minX) / double(graphWidth - 1);
-
-    const double mean = boost::accumulators::mean(m_accumulator);
-
-    double minDiffToMean = std::numeric_limits< double >::max();
-    double meanX = 0;
-
-    QList< QPair< double, double > > points;
-    for (double x = minX; x < maxX; x += xStep)
+    if (m_data.size() > 1)
     {
-        double y = density(x);
-        points.push_back(QPair< double, double >(x, y));
-        minY = std::min(minY, y);
-        maxY = std::max(maxY, y);
-
-        const double diffToMean = fabs(mean - x);
-        if (diffToMean < minDiffToMean)
+        int graphHeight = _rect.height() - _topPadding - _bottomPadding;
+        int graphWidth = _rect.width() - _leftPadding - _rightPadding;
+        QPoint bl = _rect.bottomLeft();
+    
+        QPainterPath path;
+    
+        double minX = *std::min_element(m_data.begin(), m_data.end());
+        double maxX = *std::max_element(m_data.begin(), m_data.end());
+        const double extendX = 0 * (maxX - minX);
+        minX -= extendX;
+        maxX += extendX;
+    
+        double minY = std::numeric_limits< double >::max();
+        double maxY = std::numeric_limits< double >::min();
+    
+        const double xStep = (maxX - minX) / double(graphWidth - 1);
+    
+        const double mean = boost::accumulators::mean(m_accumulator);
+    
+        double minDiffToMean = std::numeric_limits< double >::max();
+        double meanX = 0;
+    
+        QList< QPair< double, double > > points;
+        for (double x = minX; x < maxX; x += xStep)
         {
-            meanX = x;
-            minDiffToMean = diffToMean;
+            double y = density(x);
+            points.push_back(QPair< double, double >(x, y));
+            minY = std::min(minY, y);
+            maxY = std::max(maxY, y);
+    
+            const double diffToMean = fabs(mean - x);
+            if (diffToMean < minDiffToMean)
+            {
+                meanX = x;
+                minDiffToMean = diffToMean;
+            }
         }
-    }
-
-    const double yStep = double(graphHeight - 1) / (maxY);
-
-    bool first = true;
-    QList< QPair< double, double > >::iterator i = points.begin();
-    QList< QPair< double, double > >::iterator iend = points.end();
-
-    int x = _leftPadding;
-    double y = -_bottomPadding;
-    for (; i != iend; ++i)
-    {
-        y = -_bottomPadding - (yStep * i->second);
-
-        if (first)
+    
+        const double yStep = double(graphHeight - 1) / (maxY);
+    
+        bool first = true;
+        QList< QPair< double, double > >::iterator i = points.begin();
+        QList< QPair< double, double > >::iterator iend = points.end();
+    
+        int x = _leftPadding;
+        double y = -_bottomPadding;
+        for (; i != iend; ++i)
         {
-            path.moveTo(int(bl.x() + x), int(bl.y() + y));
-            first = false;
+            y = -_bottomPadding - (yStep * i->second);
+    
+            if (first)
+            {
+                path.moveTo(int(bl.x() + x), int(bl.y() + y));
+                first = false;
+            }
+            else
+            {
+                path.lineTo(int(bl.x() + x), int(bl.y() + y));
+            }
+    
+            if (i->first == meanX)
+            {
+                _painter.setRenderHint(QPainter::Antialiasing, false);
+                _painter.setPen(QPen(QColor(Qt::lightGray), 1, Qt::SolidLine,
+                                     Qt::RoundCap, Qt::RoundJoin));
+                _painter.drawLine(bl.x() + x, bl.y() - _bottomPadding, bl.x() + x,
+                                  bl.y() - _bottomPadding - graphHeight);
+            }
+    
+            ++x;
         }
-        else
+    
+        if (!path.isEmpty())
         {
-            path.lineTo(int(bl.x() + x), int(bl.y() + y));
+            _painter.setRenderHint(QPainter::Antialiasing, true);
+            _painter.setPen(
+                QPen(m_color, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+            _painter.drawPath(path);
         }
-
-        if (i->first == meanX)
-        {
-            _painter.setRenderHint(QPainter::Antialiasing, false);
-            _painter.setPen(QPen(QColor(Qt::lightGray), 1, Qt::SolidLine,
-                                 Qt::RoundCap, Qt::RoundJoin));
-            _painter.drawLine(bl.x() + x, bl.y() - _bottomPadding, bl.x() + x,
-                              bl.y() - _bottomPadding - graphHeight);
-        }
-
-        ++x;
-    }
-
-    if (!path.isEmpty())
-    {
-        _painter.setRenderHint(QPainter::Antialiasing, true);
-        _painter.setPen(
-            QPen(m_color, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-        _painter.drawPath(path);
     }
 }
 

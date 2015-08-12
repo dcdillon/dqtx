@@ -25,9 +25,11 @@ install:
 
 script: 
   - if [ $CXX == g++ ]; then qmake QMAKE_CXX=$CXX && make; fi
-  - if [ $CXX == g++ ]; then cd examples/cpumonitor && qmake QMAKE_CXX=$CXX && make; fi
+  - if [ $CXX == g++ ]; then pushd examples/cpumonitor && qmake QMAKE_CXX=$CXX && make; popd; fi
+  - if [ $CXX == g++ ]; then pushd examples/distribution && qmake QMAKE_CXX=$CXX && make; popd; fi
   - if [ $CXX == clang++ ]; then qmake -spec linux-clang && make; fi
-  - if [ $CXX == clang++ ]; then cd examples/cpumonitor && qmake -spec linux-clang && make; fi
+  - if [ $CXX == clang++ ]; then pushd examples/cpumonitor && qmake -spec linux-clang && make; popd; fi
+  - if [ $CXX == clang++ ]; then pushd examples/distribution && qmake -spec linux-clang && make; popd; fi
 
 notifications:
   email:
