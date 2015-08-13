@@ -19,20 +19,22 @@ before_install:
   - sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
   - sudo apt-get update && sudo apt-get install -y qtbase5-dev qt5-default qttools5-dev-tools
   - if [ $CXX == "g++" ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; sudo apt-get update -qq; fi
-  - if [ $CXX == "g++" ]; then export BUILD_COMMAND="qmake QMAKE_CXX=$CXX && make"; fi
-  - if [ $CXX == "clang++" ]; then export BUILD_COMMAND="qmake -spec linux-clang && make"; fi
+  - if [ $CXX == "g++" ]; then export QMAKE_COMMAND="qmake QMAKE_CXX=g++-4.9"; fi
+  - if [ $CXX == "clang++" ]; then export QMAKE_COMMAND="qmake -spec linux-clang"; fi
 
 install:
   - sudo apt-get install g++-4.9; export CXX="g++-4.9"
 
 script:
-  - echo $BUILD_COMMAND
-  - $BUILD_COMMAND
+  - $QMAKE_COMMAND
+  - make
   - pushd examples/cpumonitor
-  - $BUILD_COMMAND
+  - $QMAKE_COMMAND
+  - make
   - popd
   - pushd examples/distribution
-  - $BUILD_COMMAND
+  - $QMAKE_COMMAND
+  - make
   - popd
 
 notifications:
