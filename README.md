@@ -16,3 +16,8 @@ QDensityWidget is a widget that displays a density plot for a data set.  It is u
 cpumonitor is a small demo application that uses QSparklineWidget and QSparkLineAndBarsWidget to display CPU load on a system.  Each individual CPU is represented by a QSparkLineWidget.  The composite of all CPUs is represented by QSparkLineAndBarsWidget where the line represents the current CPU utilization and the bars represent currently running processes.
 
 ![ubuntu screenshot](images/cpumonitor_ubuntu.png) ![kubuntu screenshot](images/cpumonitor.png)
+
+#### distribution
+distribution is a small demo application that uses QDensityWidget and C++11 random number generators to display some density plots.
+
+![kubuntu screenshot](images/distribution.png)
