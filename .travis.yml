@@ -23,13 +23,16 @@ before_install:
 install:
   - sudo apt-get install g++-4.9; export CXX="g++-4.9"
 
-script: 
-  - if [ $CXX == g++ ]; then qmake QMAKE_CXX=$CXX && make; fi
-  - if [ $CXX == g++ ]; then pushd examples/cpumonitor && qmake QMAKE_CXX=$CXX && make; popd; fi
-  - if [ $CXX == g++ ]; then pushd examples/distribution && qmake QMAKE_CXX=$CXX && make; popd; fi
-  - if [ $CXX == clang++ ]; then qmake -spec linux-clang && make; fi
-  - if [ $CXX == clang++ ]; then pushd examples/cpumonitor && qmake -spec linux-clang && make; popd; fi
-  - if [ $CXX == clang++ ]; then pushd examples/distribution && qmake -spec linux-clang && make; popd; fi
+script:
+  - if [ $CXX == g++ ]; then BUILD_COMMAND="qmake QMAKE_CXX=$CXX && make"; fi
+  - if [ $CXX == clang++ ]; then BUILD_COMMAND="qmake -spec linux-clang && make"; fi
+  - $BUILD_COMMAND
+  - pushd examples/cpumonitor
+  - $BUILD_COMMAND
+  - popd
+  - pushd examples/distribution
+  - $BUILD_COMMAND
+  - popd
 
 notifications:
   email:
