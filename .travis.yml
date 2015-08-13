@@ -24,8 +24,9 @@ install:
   - sudo apt-get install g++-4.9; export CXX="g++-4.9"
 
 script:
-  - if [ $CXX == g++ ]; then BUILD_COMMAND="qmake QMAKE_CXX=$CXX && make"; fi
-  - if [ $CXX == clang++ ]; then BUILD_COMMAND="qmake -spec linux-clang && make"; fi
+  - if [ $CXX == g++ ]; then export BUILD_COMMAND="qmake QMAKE_CXX=$CXX && make"; fi
+  - if [ $CXX == clang++ ]; then export BUILD_COMMAND="qmake -spec linux-clang && make"; fi
+  - echo $BUILD_COMMAND
   - $BUILD_COMMAND
   - pushd examples/cpumonitor
   - $BUILD_COMMAND
