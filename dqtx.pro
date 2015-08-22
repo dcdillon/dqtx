@@ -9,6 +9,17 @@ QT += widgets
 DEPENDPATH += . include src include/dqtx
 INCLUDEPATH += . ./include
 
+DISTFILES += debian/changelog \
+             debian/compat \
+             debian/control \
+             debian/copyright \
+             debian/rules \
+             debian/libdqtx0.dirs \
+             debian/libdqtx0.install \
+             debian/libdqtx-dev.dirs \
+             debian/libdqtx-dev.install \
+             debian/source/format
+
 VERSION = 0.0.1
 
 # Input
@@ -26,9 +37,9 @@ SOURCES += src/QSparkLineWidget.cpp \
            src/QAppIndicator.cpp \
            src/QIconTheme.cpp
            
-target.path=/usr/local/lib
+target.path=/usr/lib
 INSTALLS += target
 
-includes.path=/usr/local/include/dqtx
+includes.path=/usr/include/dqtx
 includes.files=include/dqtx/*
 INSTALLS += includes

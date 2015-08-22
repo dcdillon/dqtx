@@ -1,0 +1,21 @@
+rm -rf deb
+rm -rf *.tar.gz
+
+qmake && make -j dist
+
+mkdir deb
+cp *.tar.gz deb
+
+pushd deb
+
+VERSION=`ls *.tar.gz | grep -Po '[0-9]+\.[0-9]+\.[0-9]+'`
+mv dqtx$VERSION.tar.gz libdqtx_$VERSION.orig.tar.gz
+tar -xzf libdqtx_$VERSION.orig.tar.gz
+mv dqtx$VERSION libdqtx-$VERSION
+pushd libdqtx-$VERSION
+
+debuild -uc -us -rfakeroot
+
+popd
+
+popd
