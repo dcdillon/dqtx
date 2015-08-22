@@ -28,36 +28,73 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dqtx/QTextIconFactory.hpp>
-#include <QPainter>
-#include <QPen>
-#include <QPixmap>
-#include <QFont>
+#include <dqtx/QIconTheme.hpp>
+#include <QFile>
+#include <QTextStream>
 
 namespace dqtx
 {
 
-QIcon QTextIconFactory::create(const QString &_text, const QColor &_textColor,
-    const QColor &_bgColor,int _width, int _height, int _fontSizeHint)
+QIconTheme::QIconTheme()
 {
-    QPixmap pixmap(_width, _height);
-    pixmap.fill(_bgColor);
-    QPainter painter(&pixmap);
-    painter.setPen(QPen(_textColor));
+    m_uuid = QUuid::createUuid();
+    m_dir = QDir::temp();
+    m_dir.mkdir(m_uuid.toString());
+    m_dir.cd(m_uuid.toString());
     
-    QFont font = painter.font();
-    font.setPointSize(_fontSizeHint);
-    painter.setFont(font);
+    QFile file(m_dir.absolutePath() + QString("/index.theme"));
+    file.open(QIODevice::WriteOnly);
+    QTextStream outfile(&file);
     
-    while (painter.fontMetrics().width(_text) > _width - 2
-        || painter.fontMetrics().xHeight() > _height - 2)
+    outfile << "[Icon Theme]\n"
+        << "Name=QIconTheme\n"
+        << "Comment=Temporary icon theme\n"
+        << "Hidden=true\n";
+    file.close();
+}
+
+QIconTheme::~QIconTheme()
+{
+    QStringList files = m_dir.entryList();
+    QStringList::iterator i = files.begin();
+    QStringList::iterator iend = files.end();
+    
+    for ( ; i != iend; ++i)
     {
-        font.setPointSize(font.pointSize() - 1);
-        painter.setFont(font);
+        m_dir.remove(*i);
     }
     
-    painter.drawText(pixmap.rect(), Qt::AlignCenter, _text);
-    return QIcon(pixmap);
+    m_dir.cdUp();
+    m_dir.rmdir(m_uuid.toString());
+}
+
+void QIconTheme::addIcon(const QIcon &_icon, const QString &_name)
+{
+    m_lock.lock();
+    _icon.pixmap(48).toImage().save(m_dir.absolutePath() + QString("/") + _name + QString(".png"));
+    m_iconByName[_name] = _icon;
+    m_lock.unlock();
+}
+
+bool QIconTheme::hasIcon(const QString &_name) const
+{
+    bool retval = false;
+    
+    m_lock.lock();
+    QMap< QString, QIcon >::const_iterator i = m_iconByName.find(_name);
+    
+    if (i != m_iconByName.end())
+    {
+        retval = true;
+    }
+    m_lock.unlock();
+    
+    return retval;
+}
+
+QDir QIconTheme::dir() const
+{
+    return m_dir;
 }
     
 }  // namespace dqtx

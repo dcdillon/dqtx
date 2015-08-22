@@ -1,8 +1,9 @@
 #include "appindicator.hpp"
 #include <QTimer>
+#include <dqtx/QTextIconFactory.hpp>
 
 appindicator::appindicator(int _argc, char *_argv[]) : m_application(_argc, _argv),
-    m_appIndicator("appindicator-example", "applications-chat-panel", "")
+    m_appIndicator("appindicator-example", "applications-chat-panel", "", m_iconTheme.dir().absolutePath())
 {
     m_appIndicator.addMenuItem("Quit");
     connect(&m_appIndicator, SIGNAL(menuItemActivated(QString, GtkWidget *)),
@@ -33,14 +34,9 @@ void appindicator::onTimeout()
     
     if (count % 2)
     {
-        if (iconCount % 2)
-        {
-            m_appIndicator.setIconName("applications-chat-panel");
-        }
-        else
-        {
-            m_appIndicator.setIconName("applications-email-panel");
-        }
+        m_iconTheme.addIcon(dqtx::QTextIconFactory::create(QString::number(iconCount) + QString("k")),
+            QString::number(iconCount));
+        m_appIndicator.setIconName(QString::number(iconCount));
         
         m_appIndicator.setLabel(QString::number(iconCount));
         

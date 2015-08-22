@@ -28,36 +28,33 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dqtx/QTextIconFactory.hpp>
-#include <QPainter>
-#include <QPen>
-#include <QPixmap>
-#include <QFont>
+#pragma once
+
+#include <QObject>
+#include <QIcon>
+#include <QMap>
+#include <QUuid>
+#include <QDir>
+#include <QMutex>
 
 namespace dqtx
 {
-
-QIcon QTextIconFactory::create(const QString &_text, const QColor &_textColor,
-    const QColor &_bgColor,int _width, int _height, int _fontSizeHint)
+    
+class QIconTheme
 {
-    QPixmap pixmap(_width, _height);
-    pixmap.fill(_bgColor);
-    QPainter painter(&pixmap);
-    painter.setPen(QPen(_textColor));
+public:
+    QIconTheme();
+    virtual ~QIconTheme();
     
-    QFont font = painter.font();
-    font.setPointSize(_fontSizeHint);
-    painter.setFont(font);
+    void addIcon(const QIcon &_icon, const QString &_name);
+    bool hasIcon(const QString &_name) const;
+    QDir dir() const;
     
-    while (painter.fontMetrics().width(_text) > _width - 2
-        || painter.fontMetrics().xHeight() > _height - 2)
-    {
-        font.setPointSize(font.pointSize() - 1);
-        painter.setFont(font);
-    }
+private:
+    QUuid m_uuid;
+    QDir m_dir;
+    QMap< QString, QIcon > m_iconByName;
+    mutable QMutex m_lock;
+};
     
-    painter.drawText(pixmap.rect(), Qt::AlignCenter, _text);
-    return QIcon(pixmap);
-}
-    
-}  // namespace dqtx
+} // namespce dqtx

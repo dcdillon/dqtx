@@ -43,13 +43,14 @@ class QAppIndicator : public QObject
    public:
     static void menuItemActivatedExternal(GtkMenu *_menu, gpointer _data);
    public:
-    QAppIndicator(const QString &_name, const QString &_iconName, const QString &_label);
+    QAppIndicator(const QString &_name, const QString &_iconName, const QString &_label = "", const QString &_iconThemePath = "");
     virtual ~QAppIndicator();
     void addMenuItem(const QString &_label);
     void show();
     void hide();
     void setLabel(const QString &_label);
     void setIconName(const QString &_iconName);
+    void setIconThemePath(const QString &_path);
     
    protected:
     class MenuItem
@@ -68,12 +69,14 @@ class QAppIndicator : public QObject
     void shown(bool _visible);
     void labelChanged(QString _label);
     void iconNameChanged(QString _iconName);
+    void iconThemePathChanged(QString _path);
     
    public slots:
     void onMenuItemAdded(QString _label);
     void onShown(bool _visible);
     void onLabelChanged(QString _label);
     void onIconNameChanged(QString _iconName);
+    void onIconThemePathChanged(QString _path);
     
    private:
     AppIndicator *m_appIndicator;

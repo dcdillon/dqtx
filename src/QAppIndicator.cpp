@@ -41,7 +41,8 @@ void QAppIndicator::menuItemActivatedExternal(GtkMenu *_menu, gpointer _data)
 }
 
 QAppIndicator::QAppIndicator(const QString &_name, const QString &_iconName,
-    const QString &_label) : m_name(_name), m_iconName(_iconName), m_label(_label)
+    const QString &_label, const QString &_iconThemePath) : m_name(_name),
+        m_iconName(_iconName), m_label(_label)
 {
     connect(this, SIGNAL(menuItemAdded(QString)), this, SLOT(onMenuItemAdded(QString)));
     connect(this, SIGNAL(shown(bool)), this, SLOT(onShown(bool)));
@@ -49,6 +50,12 @@ QAppIndicator::QAppIndicator(const QString &_name, const QString &_iconName,
     connect(this, SIGNAL(iconNameChanged(QString)), this, SLOT(onIconNameChanged(QString)));
     
     m_appIndicator = app_indicator_new(m_name.toLocal8Bit().data(), m_iconName.toLocal8Bit().data(), APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+    
+    if (_iconThemePath != "")
+    {
+        app_indicator_set_icon_theme_path(m_appIndicator, _iconThemePath.toLocal8Bit().data());
+    }
+    
     app_indicator_set_label(m_appIndicator, m_label.toLocal8Bit().data(), NULL);
     
     m_menu = gtk_menu_new();
@@ -57,6 +64,13 @@ QAppIndicator::QAppIndicator(const QString &_name, const QString &_iconName,
 
 QAppIndicator::~QAppIndicator()
 {
+    QList< MenuItem * >::iterator i = m_menuItems.begin();
+    QList< MenuItem * >::iterator iend = m_menuItems.end();
+    
+    for ( ; i != iend; ++i)
+    {
+        delete *i;
+    }
 }
 
 void QAppIndicator::addMenuItem(const QString &_label)
@@ -82,6 +96,11 @@ void QAppIndicator::setLabel(const QString &_label)
 void QAppIndicator::setIconName(const QString &_iconName)
 {
     emit iconNameChanged(_iconName);
+}
+
+void QAppIndicator::setIconThemePath(const QString &_path)
+{
+    emit iconThemePathChanged(_path);
 }
 
 void QAppIndicator::menuItemActivatedInternal(MenuItem *_item)
@@ -123,6 +142,11 @@ void QAppIndicator::onIconNameChanged(QString _iconName)
 {
     m_iconName = _iconName;
     app_indicator_set_icon_full(m_appIndicator, m_iconName.toLocal8Bit().data(), m_iconName.toLocal8Bit().data());
+}
+
+void QAppIndicator::onIconThemePathChanged(QString _path)
+{
+    app_indicator_set_icon_theme_path(m_appIndicator, _path.toLocal8Bit().data());
 }
 
 }  // namespace dqtx
