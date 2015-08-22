@@ -10,7 +10,7 @@ class appindicator : public QObject
     QApplication m_application;
     dqtx::QIconTheme m_iconTheme;
     dqtx::QAppIndicator m_appIndicator;
-    
+
    public:
     appindicator(int _argc, char *_argv[]);
     void run();

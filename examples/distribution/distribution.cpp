@@ -7,8 +7,8 @@
 #include <QTimer>
 #include <QColor>
 
-distribution::distribution(int _argc, char *_argv[]) : m_application(_argc, _argv), m_table(4, 2),
-    m_normalRandNonzero(5.0)
+distribution::distribution(int _argc, char *_argv[])
+    : m_application(_argc, _argv), m_table(4, 2), m_normalRandNonzero(5.0)
 {
     m_table.show();
 }
@@ -37,15 +37,15 @@ void distribution::on_timeout()
         m_lognormalWidget = new dqtx::QDensityWidget();
         m_table.setItem(1, 0, new QTableWidgetItem(QString("Lognormal")));
         m_table.setCellWidget(1, 1, m_lognormalWidget);
-        
+
         m_bernoulliWidget = new dqtx::QDensityWidget();
         m_table.setItem(2, 0, new QTableWidgetItem(QString("Bernoulli")));
         m_table.setCellWidget(2, 1, m_bernoulliWidget);
-        
+
         m_bimodalWidget = new dqtx::QDensityWidget();
         m_table.setItem(3, 0, new QTableWidgetItem(QString("Bimodal")));
         m_table.setCellWidget(3, 1, m_bimodalWidget);
-        
+
         firstTime = false;
     }
 
@@ -54,10 +54,10 @@ void distribution::on_timeout()
 
     val = m_lognormalRand(m_generator);
     m_lognormalWidget->insertObservation(val);
-    
+
     val = (int32_t)m_bernoulliRand(m_generator);
     m_bernoulliWidget->insertObservation(val);
-    
+
     if (count++ % 2)
     {
         val = m_normalRand(m_generator);

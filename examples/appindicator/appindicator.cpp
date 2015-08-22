@@ -2,12 +2,18 @@
 #include <QTimer>
 #include <dqtx/QTextIconFactory.hpp>
 
-appindicator::appindicator(int _argc, char *_argv[]) : m_application(_argc, _argv),
-    m_appIndicator("appindicator-example", "applications-chat-panel", "", m_iconTheme.dir().absolutePath())
+appindicator::appindicator(int _argc, char *_argv[])
+    : m_application(_argc, _argv)
+    , m_appIndicator("appindicator-example",
+                     "applications-chat-panel",
+                     "",
+                     m_iconTheme.dir().absolutePath())
 {
     m_appIndicator.addMenuItem("Quit");
-    connect(&m_appIndicator, SIGNAL(menuItemActivated(QString, GtkWidget *)),
-        this, SLOT(onQuitClicked(QString, GtkWidget *)));
+    connect(&m_appIndicator,
+            SIGNAL(menuItemActivated(QString, GtkWidget *)),
+            this,
+            SLOT(onQuitClicked(QString, GtkWidget *)));
 }
 
 void appindicator::run()
@@ -31,15 +37,16 @@ void appindicator::onTimeout()
 {
     static int32_t count = 0;
     static int32_t iconCount = 0;
-    
+
     if (count % 2)
     {
-        m_iconTheme.addIcon(dqtx::QTextIconFactory::create(QString::number(iconCount) + QString("k")),
-            QString::number(iconCount));
+        m_iconTheme.addIcon(dqtx::QTextIconFactory::create(
+                                QString::number(iconCount) + QString("k")),
+                            QString::number(iconCount));
         m_appIndicator.setIconName(QString::number(iconCount));
-        
+
         m_appIndicator.setLabel(QString::number(iconCount));
-        
+
         m_appIndicator.show();
         ++iconCount;
     }
@@ -47,6 +54,6 @@ void appindicator::onTimeout()
     {
         m_appIndicator.hide();
     }
-    
+
     count++;
 }

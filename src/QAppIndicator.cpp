@@ -35,29 +35,44 @@ namespace dqtx
 void QAppIndicator::menuItemActivatedExternal(GtkMenu *_menu, gpointer _data)
 {
     Q_UNUSED(_menu);
-    
+
     MenuItem *data = static_cast< MenuItem * >(_data);
     data->m_indicator->menuItemActivatedInternal(data);
 }
 
-QAppIndicator::QAppIndicator(const QString &_name, const QString &_iconName,
-    const QString &_label, const QString &_iconThemePath) : m_name(_name),
-        m_iconName(_iconName), m_label(_label)
+QAppIndicator::QAppIndicator(const QString &_name,
+                             const QString &_iconName,
+                             const QString &_label,
+                             const QString &_iconThemePath)
+    : m_name(_name), m_iconName(_iconName), m_label(_label)
 {
-    connect(this, SIGNAL(menuItemAdded(QString)), this, SLOT(onMenuItemAdded(QString)));
+    connect(this,
+            SIGNAL(menuItemAdded(QString)),
+            this,
+            SLOT(onMenuItemAdded(QString)));
     connect(this, SIGNAL(shown(bool)), this, SLOT(onShown(bool)));
-    connect(this, SIGNAL(labelChanged(QString)), this, SLOT(onLabelChanged(QString)));
-    connect(this, SIGNAL(iconNameChanged(QString)), this, SLOT(onIconNameChanged(QString)));
-    
-    m_appIndicator = app_indicator_new(m_name.toLocal8Bit().data(), m_iconName.toLocal8Bit().data(), APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
-    
+    connect(this,
+            SIGNAL(labelChanged(QString)),
+            this,
+            SLOT(onLabelChanged(QString)));
+    connect(this,
+            SIGNAL(iconNameChanged(QString)),
+            this,
+            SLOT(onIconNameChanged(QString)));
+
+    m_appIndicator =
+        app_indicator_new(m_name.toLocal8Bit().data(),
+                          m_iconName.toLocal8Bit().data(),
+                          APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+
     if (_iconThemePath != "")
     {
-        app_indicator_set_icon_theme_path(m_appIndicator, _iconThemePath.toLocal8Bit().data());
+        app_indicator_set_icon_theme_path(m_appIndicator,
+                                          _iconThemePath.toLocal8Bit().data());
     }
-    
+
     app_indicator_set_label(m_appIndicator, m_label.toLocal8Bit().data(), NULL);
-    
+
     m_menu = gtk_menu_new();
     app_indicator_set_menu(m_appIndicator, GTK_MENU(m_menu));
 }
@@ -66,8 +81,8 @@ QAppIndicator::~QAppIndicator()
 {
     QList< MenuItem * >::iterator i = m_menuItems.begin();
     QList< MenuItem * >::iterator iend = m_menuItems.end();
-    
-    for ( ; i != iend; ++i)
+
+    for (; i != iend; ++i)
     {
         delete *i;
     }
@@ -78,15 +93,9 @@ void QAppIndicator::addMenuItem(const QString &_label)
     emit menuItemAdded(_label);
 }
 
-void QAppIndicator::show()
-{
-    emit shown(true);
-}
+void QAppIndicator::show() { emit shown(true); }
 
-void QAppIndicator::hide()
-{
-    emit shown(false);
-}
+void QAppIndicator::hide() { emit shown(false); }
 
 void QAppIndicator::setLabel(const QString &_label)
 {
@@ -116,7 +125,8 @@ void QAppIndicator::onMenuItemAdded(QString _label)
     item->m_indicator = this;
     m_menuItems.push_back(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(m_menu), item->m_item);
-    g_signal_connect(item->m_item, "activate", G_CALLBACK(menuItemActivatedExternal), item);
+    g_signal_connect(
+        item->m_item, "activate", G_CALLBACK(menuItemActivatedExternal), item);
     gtk_widget_show(item->m_item);
 }
 
@@ -141,12 +151,15 @@ void QAppIndicator::onLabelChanged(QString _label)
 void QAppIndicator::onIconNameChanged(QString _iconName)
 {
     m_iconName = _iconName;
-    app_indicator_set_icon_full(m_appIndicator, m_iconName.toLocal8Bit().data(), m_iconName.toLocal8Bit().data());
+    app_indicator_set_icon_full(m_appIndicator,
+                                m_iconName.toLocal8Bit().data(),
+                                m_iconName.toLocal8Bit().data());
 }
 
 void QAppIndicator::onIconThemePathChanged(QString _path)
 {
-    app_indicator_set_icon_theme_path(m_appIndicator, _path.toLocal8Bit().data());
+    app_indicator_set_icon_theme_path(m_appIndicator,
+                                      _path.toLocal8Bit().data());
 }
 
 }  // namespace dqtx

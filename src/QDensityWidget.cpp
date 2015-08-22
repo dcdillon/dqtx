@@ -48,13 +48,17 @@ QDensityWidget::QDensityWidget(QWidget *_parent, Qt::WindowFlags _flags)
     , m_bandwidth(.5)
     , m_maxObservations(600)
 {
-    QObject::connect(this, SIGNAL(observationInserted(double)), this,
+    QObject::connect(this,
+                     SIGNAL(observationInserted(double)),
+                     this,
                      SLOT(onObservationInserted(double)));
-    QObject::connect(this, SIGNAL(colorChanged(QColor)), this,
-                     SLOT(onColorChanged(QColor)));
-    QObject::connect(this, SIGNAL(paddingChanged(int)), this,
-                     SLOT(onPaddingChanged(int)));
-    QObject::connect(this, SIGNAL(maxObservationsChanged(int)), this,
+    QObject::connect(
+        this, SIGNAL(colorChanged(QColor)), this, SLOT(onColorChanged(QColor)));
+    QObject::connect(
+        this, SIGNAL(paddingChanged(int)), this, SLOT(onPaddingChanged(int)));
+    QObject::connect(this,
+                     SIGNAL(maxObservationsChanged(int)),
+                     this,
                      SLOT(onMaxObservationsChanged(int)));
 }
 
@@ -81,8 +85,8 @@ void QDensityWidget::paintEvent(QPaintEvent *_event)
 {
     QPainter painter(this);
 
-    drawLine(painter, _event->rect(), m_padding, m_padding, m_padding,
-             m_padding);
+    drawLine(
+        painter, _event->rect(), m_padding, m_padding, m_padding, m_padding);
 }
 
 double QDensityWidget::density(double _x)
@@ -119,25 +123,25 @@ void QDensityWidget::drawLine(QPainter &_painter,
         int graphHeight = _rect.height() - _topPadding - _bottomPadding;
         int graphWidth = _rect.width() - _leftPadding - _rightPadding;
         QPoint bl = _rect.bottomLeft();
-    
+
         QPainterPath path;
-    
+
         double minX = *std::min_element(m_data.begin(), m_data.end());
         double maxX = *std::max_element(m_data.begin(), m_data.end());
         const double extendX = 0 * (maxX - minX);
         minX -= extendX;
         maxX += extendX;
-    
+
         double minY = std::numeric_limits< double >::max();
         double maxY = std::numeric_limits< double >::min();
-    
+
         const double xStep = (maxX - minX) / double(graphWidth - 1);
-    
+
         const double mean = boost::accumulators::mean(m_accumulator);
-    
+
         double minDiffToMean = std::numeric_limits< double >::max();
         double meanX = 0;
-    
+
         QList< QPair< double, double > > points;
         for (double x = minX; x < maxX; x += xStep)
         {
@@ -145,7 +149,7 @@ void QDensityWidget::drawLine(QPainter &_painter,
             points.push_back(QPair< double, double >(x, y));
             minY = std::min(minY, y);
             maxY = std::max(maxY, y);
-    
+
             const double diffToMean = fabs(mean - x);
             if (diffToMean < minDiffToMean)
             {
@@ -153,19 +157,19 @@ void QDensityWidget::drawLine(QPainter &_painter,
                 minDiffToMean = diffToMean;
             }
         }
-    
+
         const double yStep = double(graphHeight - 1) / (maxY);
-    
+
         bool first = true;
         QList< QPair< double, double > >::iterator i = points.begin();
         QList< QPair< double, double > >::iterator iend = points.end();
-    
+
         int x = _leftPadding;
         double y = -_bottomPadding;
         for (; i != iend; ++i)
         {
             y = -_bottomPadding - (yStep * i->second);
-    
+
             if (first)
             {
                 path.moveTo(int(bl.x() + x), int(bl.y() + y));
@@ -175,19 +179,24 @@ void QDensityWidget::drawLine(QPainter &_painter,
             {
                 path.lineTo(int(bl.x() + x), int(bl.y() + y));
             }
-    
+
             if (i->first == meanX)
             {
                 _painter.setRenderHint(QPainter::Antialiasing, false);
-                _painter.setPen(QPen(QColor(Qt::lightGray), 1, Qt::SolidLine,
-                                     Qt::RoundCap, Qt::RoundJoin));
-                _painter.drawLine(bl.x() + x, bl.y() - _bottomPadding, bl.x() + x,
+                _painter.setPen(QPen(QColor(Qt::lightGray),
+                                     1,
+                                     Qt::SolidLine,
+                                     Qt::RoundCap,
+                                     Qt::RoundJoin));
+                _painter.drawLine(bl.x() + x,
+                                  bl.y() - _bottomPadding,
+                                  bl.x() + x,
                                   bl.y() - _bottomPadding - graphHeight);
             }
-    
+
             ++x;
         }
-    
+
         if (!path.isEmpty())
         {
             _painter.setRenderHint(QPainter::Antialiasing, true);
@@ -305,9 +314,12 @@ void QDensityWidget::updateToolTip()
     const double mean = boost::accumulators::mean(m_accumulator);
 
     setToolTip(QString("%1: %2\n%3: %4\nMin: %5\nMax: %6\nbw: %7")
-                   .arg(QString(QChar(0x03BC)), QString::number(mean),
-                        QString(QChar(0x03C3)), QString::number(sigma),
-                        QString::number(min), QString::number(max),
+                   .arg(QString(QChar(0x03BC)),
+                        QString::number(mean),
+                        QString(QChar(0x03C3)),
+                        QString::number(sigma),
+                        QString::number(min),
+                        QString::number(max),
                         QString::number(m_bandwidth)));
 }
 

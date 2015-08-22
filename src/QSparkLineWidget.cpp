@@ -48,19 +48,29 @@ QSparkLineWidget::QSparkLineWidget(QWidget *_parent, Qt::WindowFlags _flags)
     , m_padding(5)
     , m_maxObservations(30)
 {
-    QObject::connect(this, SIGNAL(observationInserted(double)), this,
+    QObject::connect(this,
+                     SIGNAL(observationInserted(double)),
+                     this,
                      SLOT(onObservationInserted(double)));
-    QObject::connect(this, SIGNAL(displayTypeChanged(int)), this,
+    QObject::connect(this,
+                     SIGNAL(displayTypeChanged(int)),
+                     this,
                      SLOT(onDisplayTypeChanged(int)));
-    QObject::connect(this, SIGNAL(minRangeChanged(double)), this,
+    QObject::connect(this,
+                     SIGNAL(minRangeChanged(double)),
+                     this,
                      SLOT(onMinRangeChanged(double)));
-    QObject::connect(this, SIGNAL(minimumChanged(double)), this,
+    QObject::connect(this,
+                     SIGNAL(minimumChanged(double)),
+                     this,
                      SLOT(onMinimumChanged(double)));
-    QObject::connect(this, SIGNAL(colorChanged(QColor)), this,
-                     SLOT(onColorChanged(QColor)));
-    QObject::connect(this, SIGNAL(paddingChanged(int)), this,
-                     SLOT(onPaddingChanged(int)));
-    QObject::connect(this, SIGNAL(maxObservationsChanged(int)), this,
+    QObject::connect(
+        this, SIGNAL(colorChanged(QColor)), this, SLOT(onColorChanged(QColor)));
+    QObject::connect(
+        this, SIGNAL(paddingChanged(int)), this, SLOT(onPaddingChanged(int)));
+    QObject::connect(this,
+                     SIGNAL(maxObservationsChanged(int)),
+                     this,
                      SLOT(onMaxObservationsChanged(int)));
 }
 
@@ -111,13 +121,23 @@ void QSparkLineWidget::paintEvent(QPaintEvent *_event)
     switch (m_displayType)
     {
         case DisplayTypeBars:
-            drawBars(m_data, painter, _event->rect(), m_padding, m_padding,
-                     m_padding, m_padding);
+            drawBars(m_data,
+                     painter,
+                     _event->rect(),
+                     m_padding,
+                     m_padding,
+                     m_padding,
+                     m_padding);
             break;
         case DisplayTypeLine:
         default:
-            drawLine(m_data, painter, _event->rect(), m_padding, m_padding,
-                     m_padding, m_padding);
+            drawLine(m_data,
+                     painter,
+                     _event->rect(),
+                     m_padding,
+                     m_padding,
+                     m_padding,
+                     m_padding);
             break;
     }
 }
@@ -245,8 +265,8 @@ void QSparkLineWidget::drawBars(const QList< double > &_data,
             double height = (*i - min) * skip;
             y = -_bottomPadding - height;
 
-            _painter.drawLine(bl.x() + x, bl.y() - _bottomPadding, bl.x() + x,
-                              bl.y() + y);
+            _painter.drawLine(
+                bl.x() + x, bl.y() - _bottomPadding, bl.x() + x, bl.y() + y);
 
             x += width;
         }
@@ -269,9 +289,8 @@ void QSparkLineWidget::onObservationInserted(double _data)
     double max = *std::max_element(m_data.begin(), m_data.end());
     double change = m_data.back() - m_data.front();
 
-    setToolTip(QString("Min: %1\nMax: %2\nChange: %3")
-                   .arg(QString::number(min), QString::number(max),
-                        QString::number(change)));
+    setToolTip(QString("Min: %1\nMax: %2\nChange: %3").arg(
+        QString::number(min), QString::number(max), QString::number(change)));
     update();
 }
 
@@ -321,9 +340,8 @@ void QSparkLineWidget::onMaxObservationsChanged(int _max)
     double max = *std::max_element(m_data.begin(), m_data.end());
     double change = m_data.back() - m_data.front();
 
-    setToolTip(QString("Min: %1\nMax: %2\nChange: %3")
-                   .arg(QString::number(min), QString::number(max),
-                        QString::number(change)));
+    setToolTip(QString("Min: %1\nMax: %2\nChange: %3").arg(
+        QString::number(min), QString::number(max), QString::number(change)));
 
     update();
 }

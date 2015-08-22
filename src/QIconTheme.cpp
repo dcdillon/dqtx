@@ -34,22 +34,21 @@
 
 namespace dqtx
 {
-
 QIconTheme::QIconTheme()
 {
     m_uuid = QUuid::createUuid();
     m_dir = QDir::temp();
     m_dir.mkdir(m_uuid.toString());
     m_dir.cd(m_uuid.toString());
-    
+
     QFile file(m_dir.absolutePath() + QString("/index.theme"));
     file.open(QIODevice::WriteOnly);
     QTextStream outfile(&file);
-    
+
     outfile << "[Icon Theme]\n"
-        << "Name=QIconTheme\n"
-        << "Comment=Temporary icon theme\n"
-        << "Hidden=true\n";
+            << "Name=QIconTheme\n"
+            << "Comment=Temporary icon theme\n"
+            << "Hidden=true\n";
     file.close();
 }
 
@@ -58,12 +57,12 @@ QIconTheme::~QIconTheme()
     QStringList files = m_dir.entryList();
     QStringList::iterator i = files.begin();
     QStringList::iterator iend = files.end();
-    
-    for ( ; i != iend; ++i)
+
+    for (; i != iend; ++i)
     {
         m_dir.remove(*i);
     }
-    
+
     m_dir.cdUp();
     m_dir.rmdir(m_uuid.toString());
 }
@@ -71,7 +70,8 @@ QIconTheme::~QIconTheme()
 void QIconTheme::addIcon(const QIcon &_icon, const QString &_name)
 {
     m_lock.lock();
-    _icon.pixmap(48).toImage().save(m_dir.absolutePath() + QString("/") + _name + QString(".png"));
+    _icon.pixmap(48).toImage().save(m_dir.absolutePath() + QString("/") +
+                                    _name + QString(".png"));
     m_iconByName[_name] = _icon;
     m_lock.unlock();
 }
@@ -79,22 +79,19 @@ void QIconTheme::addIcon(const QIcon &_icon, const QString &_name)
 bool QIconTheme::hasIcon(const QString &_name) const
 {
     bool retval = false;
-    
+
     m_lock.lock();
     QMap< QString, QIcon >::const_iterator i = m_iconByName.find(_name);
-    
+
     if (i != m_iconByName.end())
     {
         retval = true;
     }
     m_lock.unlock();
-    
+
     return retval;
 }
 
-QDir QIconTheme::dir() const
-{
-    return m_dir;
-}
-    
+QDir QIconTheme::dir() const { return m_dir; }
+
 }  // namespace dqtx

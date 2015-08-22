@@ -55,33 +55,61 @@ QSparkLineAndBarsWidget::QSparkLineAndBarsWidget(QWidget *_parent,
     , m_maxObservations(30)
     , m_barHeightRatio(.33)
 {
-    QObject::connect(this, SIGNAL(observationInserted(double, double)), this,
+    QObject::connect(this,
+                     SIGNAL(observationInserted(double, double)),
+                     this,
                      SLOT(onObservationInserted(double, double)));
-    QObject::connect(this, SIGNAL(minLineRangeChanged(double)), this,
+    QObject::connect(this,
+                     SIGNAL(minLineRangeChanged(double)),
+                     this,
                      SLOT(onMinLineRangeChanged(double)));
-    QObject::connect(this, SIGNAL(lineMinimumChanged(double)), this,
+    QObject::connect(this,
+                     SIGNAL(lineMinimumChanged(double)),
+                     this,
                      SLOT(onLineMinimumChanged(double)));
-    QObject::connect(this, SIGNAL(minBarRangeChanged(double)), this,
+    QObject::connect(this,
+                     SIGNAL(minBarRangeChanged(double)),
+                     this,
                      SLOT(onMinBarRangeChanged(double)));
-    QObject::connect(this, SIGNAL(barMinimumChanged(double)), this,
+    QObject::connect(this,
+                     SIGNAL(barMinimumChanged(double)),
+                     this,
                      SLOT(onBarMinimumChanged(double)));
-    QObject::connect(this, SIGNAL(lineColorChanged(QColor)), this,
+    QObject::connect(this,
+                     SIGNAL(lineColorChanged(QColor)),
+                     this,
                      SLOT(onLineColorChanged(QColor)));
-    QObject::connect(this, SIGNAL(barColorChanged(QColor)), this,
+    QObject::connect(this,
+                     SIGNAL(barColorChanged(QColor)),
+                     this,
                      SLOT(onBarColorChanged(QColor)));
-    QObject::connect(this, SIGNAL(leftPaddingChanged(int)), this,
+    QObject::connect(this,
+                     SIGNAL(leftPaddingChanged(int)),
+                     this,
                      SLOT(onLeftPaddingChanged(int)));
-    QObject::connect(this, SIGNAL(rightPaddingChanged(int)), this,
+    QObject::connect(this,
+                     SIGNAL(rightPaddingChanged(int)),
+                     this,
                      SLOT(onRightPaddingChanged(int)));
-    QObject::connect(this, SIGNAL(topPaddingChanged(int)), this,
+    QObject::connect(this,
+                     SIGNAL(topPaddingChanged(int)),
+                     this,
                      SLOT(onTopPaddingChanged(int)));
-    QObject::connect(this, SIGNAL(bottomPaddingChanged(int)), this,
+    QObject::connect(this,
+                     SIGNAL(bottomPaddingChanged(int)),
+                     this,
                      SLOT(onBottomPaddingChanged(int)));
-    QObject::connect(this, SIGNAL(paddingChanged(int, int, int, int)), this,
+    QObject::connect(this,
+                     SIGNAL(paddingChanged(int, int, int, int)),
+                     this,
                      SLOT(onPaddingChanged(int, int, int, int)));
-    QObject::connect(this, SIGNAL(maxObservationsChanged(int)), this,
+    QObject::connect(this,
+                     SIGNAL(maxObservationsChanged(int)),
+                     this,
                      SLOT(onMaxObservationsChanged(int)));
-    QObject::connect(this, SIGNAL(barHeightRatioChanged(double)), this,
+    QObject::connect(this,
+                     SIGNAL(barHeightRatioChanged(double)),
+                     this,
                      SLOT(onBarHeightRatioChanged(double)));
 }
 
@@ -178,15 +206,28 @@ void QSparkLineAndBarsWidget::paintEvent(QPaintEvent *_event)
     const int lineWidth = graphWidth;
 
     QRect barRect(_event->rect().topLeft().x(),
-                  _event->rect().topLeft().y() + lineHeight, barWidth,
+                  _event->rect().topLeft().y() + lineHeight,
+                  barWidth,
                   barHeight);
-    QRect lineRect(_event->rect().topLeft().x(), _event->rect().topLeft().y(),
-                   lineWidth, lineHeight);
+    QRect lineRect(_event->rect().topLeft().x(),
+                   _event->rect().topLeft().y(),
+                   lineWidth,
+                   lineHeight);
 
-    drawBars(m_barData, painter, barRect, m_leftPadding, m_rightPadding, 0,
+    drawBars(m_barData,
+             painter,
+             barRect,
+             m_leftPadding,
+             m_rightPadding,
+             0,
              m_bottomPadding);
-    drawLine(m_lineData, painter, lineRect, m_leftPadding, m_rightPadding,
-             m_topPadding, 0);
+    drawLine(m_lineData,
+             painter,
+             lineRect,
+             m_leftPadding,
+             m_rightPadding,
+             m_topPadding,
+             0);
 }
 
 void QSparkLineAndBarsWidget::drawLine(const QList< double > &_data,
@@ -312,8 +353,8 @@ void QSparkLineAndBarsWidget::drawBars(const QList< double > &_data,
             double height = (*i - min) * skip;
             y = -_bottomPadding - height;
 
-            _painter.drawLine(bl.x() + x, bl.y() - _bottomPadding, bl.x() + x,
-                              bl.y() + y);
+            _painter.drawLine(
+                bl.x() + x, bl.y() - _bottomPadding, bl.x() + x, bl.y() + y);
 
             x += width;
         }
@@ -338,9 +379,8 @@ void QSparkLineAndBarsWidget::onObservationInserted(double _line, double _bar)
     double max = *std::max_element(m_lineData.begin(), m_lineData.end());
     double change = m_lineData.back() - m_lineData.front();
 
-    setToolTip(QString("Min: %1\nMax: %2\nChange: %3")
-                   .arg(QString::number(min), QString::number(max),
-                        QString::number(change)));
+    setToolTip(QString("Min: %1\nMax: %2\nChange: %3").arg(
+        QString::number(min), QString::number(max), QString::number(change)));
 
     update();
 }

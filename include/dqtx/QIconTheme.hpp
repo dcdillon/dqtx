@@ -39,22 +39,21 @@
 
 namespace dqtx
 {
-    
 class QIconTheme
 {
-public:
+   public:
     QIconTheme();
     virtual ~QIconTheme();
-    
+
     void addIcon(const QIcon &_icon, const QString &_name);
     bool hasIcon(const QString &_name) const;
     QDir dir() const;
-    
-private:
+
+   private:
     QUuid m_uuid;
     QDir m_dir;
     QMap< QString, QIcon > m_iconByName;
     mutable QMutex m_lock;
 };
-    
-} // namespce dqtx
+
+}  // namespce dqtx

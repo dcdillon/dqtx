@@ -42,8 +42,12 @@ class QAppIndicator : public QObject
     Q_OBJECT
    public:
     static void menuItemActivatedExternal(GtkMenu *_menu, gpointer _data);
+
    public:
-    QAppIndicator(const QString &_name, const QString &_iconName, const QString &_label = "", const QString &_iconThemePath = "");
+    QAppIndicator(const QString &_name,
+                  const QString &_iconName,
+                  const QString &_label = "",
+                  const QString &_iconThemePath = "");
     virtual ~QAppIndicator();
     void addMenuItem(const QString &_label);
     void show();
@@ -51,7 +55,7 @@ class QAppIndicator : public QObject
     void setLabel(const QString &_label);
     void setIconName(const QString &_iconName);
     void setIconThemePath(const QString &_path);
-    
+
    protected:
     class MenuItem
     {
@@ -60,24 +64,24 @@ class QAppIndicator : public QObject
         QString m_label;
         GtkWidget *m_item;
     };
-    
+
     void menuItemActivatedInternal(MenuItem *_item);
-    
-   signals:
+
+signals:
     void menuItemAdded(QString _label);
     void menuItemActivated(QString _label, GtkWidget *_item);
     void shown(bool _visible);
     void labelChanged(QString _label);
     void iconNameChanged(QString _iconName);
     void iconThemePathChanged(QString _path);
-    
+
    public slots:
     void onMenuItemAdded(QString _label);
     void onShown(bool _visible);
     void onLabelChanged(QString _label);
     void onIconNameChanged(QString _iconName);
     void onIconThemePathChanged(QString _path);
-    
+
    private:
     AppIndicator *m_appIndicator;
     GtkWidget *m_menu;

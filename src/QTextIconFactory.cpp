@@ -36,28 +36,31 @@
 
 namespace dqtx
 {
-
-QIcon QTextIconFactory::create(const QString &_text, const QColor &_textColor,
-    const QColor &_bgColor,int _width, int _height, int _fontSizeHint)
+QIcon QTextIconFactory::create(const QString &_text,
+                               const QColor &_textColor,
+                               const QColor &_bgColor,
+                               int _width,
+                               int _height,
+                               int _fontSizeHint)
 {
     QPixmap pixmap(_width, _height);
     pixmap.fill(_bgColor);
     QPainter painter(&pixmap);
     painter.setPen(QPen(_textColor));
-    
+
     QFont font = painter.font();
     font.setPointSize(_fontSizeHint);
     painter.setFont(font);
-    
-    while (painter.fontMetrics().width(_text) > _width - 2
-        || painter.fontMetrics().xHeight() > _height - 2)
+
+    while (painter.fontMetrics().width(_text) > _width - 2 ||
+           painter.fontMetrics().xHeight() > _height - 2)
     {
         font.setPointSize(font.pointSize() - 1);
         painter.setFont(font);
     }
-    
+
     painter.drawText(pixmap.rect(), Qt::AlignCenter, _text);
     return QIcon(pixmap);
 }
-    
+
 }  // namespace dqtx
