@@ -38,7 +38,8 @@ script:
   - make
   - popd
   - pushd examples/appindicator
-  - $BUILD_COMMAND
+  - $QMAKE_COMMAND
+  - make
   - popd
 
 notifications:
