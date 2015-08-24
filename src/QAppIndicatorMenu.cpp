@@ -43,17 +43,20 @@ QAppIndicatorMenu::QAppIndicatorMenu()
 
 QAppIndicatorMenu::~QAppIndicatorMenu()
 {
+    g_object_unref(G_OBJECT(m_menu));
 }
 
-void QAppIndicator::addMenuItem(QAppIndicatorMenuItem *_item)
+void QAppIndicatorMenu::addMenuItem(QAppIndicatorMenuItem *_item)
 {
     emit menuItemAdded(_item);
 }
 
-void QAppIndicator::onMenuItemAdded(QAppIndicatorMenuItem *_item)
+void QAppIndicatorMenu::onMenuItemAdded(QAppIndicatorMenuItem *_item)
 {
-    gtk_menu_shell_append(GTK_MENU_SHELL(m_menu), _item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(m_menu), _item->m_item);
+    g_object_ref(_item->m_item);
     m_menuItems.push_back(_item);
+    _item->setParent(this);
 }
 
 }  // namespace dqtx

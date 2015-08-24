@@ -34,12 +34,17 @@
 #define signals public
 
 #include <QObject>
+#include "QAppIndicatorMenuItem.hpp"
 
 namespace dqtx
 {
+class QAppIndicator;
+
 class QAppIndicatorMenu : public QObject
 {
     Q_OBJECT
+    
+    friend class QAppIndicator;
     
    public:
     QAppIndicatorMenu();

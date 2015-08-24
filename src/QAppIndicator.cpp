@@ -32,24 +32,16 @@
 
 namespace dqtx
 {
-void QAppIndicator::menuItemActivatedExternal(GtkMenu *_menu, gpointer _data)
-{
-    Q_UNUSED(_menu);
-
-    MenuItem *data = static_cast< MenuItem * >(_data);
-    data->m_indicator->menuItemActivatedInternal(data);
-}
-
 QAppIndicator::QAppIndicator(const QString &_name,
                              const QString &_iconName,
                              const QString &_label,
                              const QString &_iconThemePath)
-    : m_name(_name), m_iconName(_iconName), m_label(_label)
+    : m_menu(NULL), m_name(_name), m_iconName(_iconName), m_label(_label)
 {
     connect(this,
-            SIGNAL(menuItemAdded(QString)),
+            SIGNAL(menuSet(QAppIndicatorMenu *)),
             this,
-            SLOT(onMenuItemAdded(QString)));
+            SLOT(onMenuSet(QAppIndicatorMenu *)));
     connect(this, SIGNAL(shown(bool)), this, SLOT(onShown(bool)));
     connect(this,
             SIGNAL(labelChanged(QString)),
@@ -59,6 +51,10 @@ QAppIndicator::QAppIndicator(const QString &_name,
             SIGNAL(iconNameChanged(QString)),
             this,
             SLOT(onIconNameChanged(QString)));
+    connect(this,
+            SIGNAL(iconThemePathChanged(QString)),
+            this,
+            SLOT(onIconThemePathChanged(QString)));
 
     m_appIndicator =
         app_indicator_new(m_name.toLocal8Bit().data(),
@@ -72,25 +68,16 @@ QAppIndicator::QAppIndicator(const QString &_name,
     }
 
     app_indicator_set_label(m_appIndicator, m_label.toLocal8Bit().data(), NULL);
-
-    m_menu = gtk_menu_new();
-    app_indicator_set_menu(m_appIndicator, GTK_MENU(m_menu));
 }
 
 QAppIndicator::~QAppIndicator()
 {
-    QList< MenuItem * >::iterator i = m_menuItems.begin();
-    QList< MenuItem * >::iterator iend = m_menuItems.end();
-
-    for (; i != iend; ++i)
-    {
-        delete *i;
-    }
+    //g_object_unref(G_OBJECT(m_appIndicator));
 }
 
-void QAppIndicator::addMenuItem(const QString &_label)
+void QAppIndicator::setMenu(QAppIndicatorMenu *_menu)
 {
-    emit menuItemAdded(_label);
+    emit menuSet(_menu);
 }
 
 void QAppIndicator::show() { emit shown(true); }
@@ -112,22 +99,16 @@ void QAppIndicator::setIconThemePath(const QString &_path)
     emit iconThemePathChanged(_path);
 }
 
-void QAppIndicator::menuItemActivatedInternal(MenuItem *_item)
+void QAppIndicator::onMenuSet(QAppIndicatorMenu *_menu)
 {
-    emit menuItemActivated(_item->m_label, _item->m_item);
-}
-
-void QAppIndicator::onMenuItemAdded(QString _label)
-{
-    MenuItem *item = new MenuItem();
-    item->m_label = _label;
-    item->m_item = gtk_menu_item_new_with_label(_label.toLocal8Bit().data());
-    item->m_indicator = this;
-    m_menuItems.push_back(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(m_menu), item->m_item);
-    g_signal_connect(
-        item->m_item, "activate", G_CALLBACK(menuItemActivatedExternal), item);
-    gtk_widget_show(item->m_item);
+    if (m_menu)
+    {
+        delete m_menu;
+    }
+    
+    m_menu = _menu;
+    app_indicator_set_menu(m_appIndicator, GTK_MENU(_menu->m_menu));
+    _menu->setParent(this);
 }
 
 void QAppIndicator::onShown(bool _visible)

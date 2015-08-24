@@ -16,6 +16,6 @@ class appindicator : public QObject
     void run();
 
    private slots:
-    void onQuitClicked(QString _label, GtkWidget *_item);
+    void onQuitClicked();
     void onTimeout();
 };

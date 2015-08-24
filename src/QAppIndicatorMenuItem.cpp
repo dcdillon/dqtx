@@ -32,9 +32,9 @@
 
 namespace dqtx
 {
-void QAppIndicatorMenuItem::menuItemActivatedExternal(GtkMenu *_menu, gpointer _data)
+void QAppIndicatorMenuItem::menuItemActivatedExternal(GtkMenuItem *_item, gpointer _data)
 {
-    Q_UNUSED(_menu);
+    Q_UNUSED(_item);
 
     QAppIndicatorMenuItem *data = static_cast< QAppIndicatorMenuItem * >(_data);
     data->menuItemActivatedInternal();
@@ -44,10 +44,6 @@ QAppIndicatorMenuItem::QAppIndicatorMenuItem(const QString &_label)
     : m_label(_label)
 {
     connect(this, SIGNAL(shown(bool)), this, SLOT(onShown(bool)));
-    connect(this,
-            SIGNAL(labelChanged(QString)),
-            this,
-            SLOT(onLabelChanged(QString)));
     
     m_item = gtk_menu_item_new_with_label(m_label.toLocal8Bit().data());
     g_signal_connect(
@@ -56,18 +52,19 @@ QAppIndicatorMenuItem::QAppIndicatorMenuItem(const QString &_label)
 
 QAppIndicatorMenuItem::~QAppIndicatorMenuItem()
 {
+    g_object_unref(G_OBJECT(m_item));
 }
 
-void QAppIndicator::show() { emit shown(true); }
+void QAppIndicatorMenuItem::show() { emit shown(true); }
 
-void QAppIndicator::hide() { emit shown(false); }
+void QAppIndicatorMenuItem::hide() { emit shown(false); }
 
-void QAppIndicator::menuItemActivatedInternal(MenuItem *_item)
+void QAppIndicatorMenuItem::menuItemActivatedInternal()
 {
     emit menuItemActivated();
 }
 
-void QAppIndicator::onShown(bool _visible)
+void QAppIndicatorMenuItem::onShown(bool _visible)
 {
     if (_visible)
     {

@@ -28,6 +28,8 @@ HEADERS += include/dqtx/QSparkLineWidget.hpp \
            include/dqtx/QDensityWidget.hpp \
            include/dqtx/QTextIconFactory.hpp \
            include/dqtx/QAppIndicator.hpp \
+           include/dqtx/QAppIndicatorMenuItem.hpp \
+           include/dqtx/QAppIndicatorMenu.hpp \
            include/dqtx/QIconTheme.hpp
 
 SOURCES += src/QSparkLineWidget.cpp \
@@ -35,7 +37,11 @@ SOURCES += src/QSparkLineWidget.cpp \
            src/QDensityWidget.cpp \
            src/QTextIconFactory.cpp \
            src/QAppIndicator.cpp \
+           src/QAppIndicatorMenuItem.cpp \
+           src/QAppIndicatorMenu.cpp \
            src/QIconTheme.cpp
+           
+#QMAKE_CXXFLAGS += -g
            
 target.path=/usr/lib
 INSTALLS += target

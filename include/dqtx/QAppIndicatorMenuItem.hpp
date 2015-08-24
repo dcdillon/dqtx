@@ -37,11 +37,15 @@
 
 namespace dqtx
 {
+class QAppIndicatorMenu;
+
 class QAppIndicatorMenuItem : public QObject
 {
     Q_OBJECT
+    
+    friend class QAppIndicatorMenu;
    public:
-    static void menuItemActivatedExternal(GtkMenu *_menu, gpointer _data);
+    static void menuItemActivatedExternal(GtkMenuItem *_item, gpointer _data);
 
    public:
     QAppIndicatorMenuItem(const QString &_label);
