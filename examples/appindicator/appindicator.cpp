@@ -9,11 +9,15 @@ appindicator::appindicator(int _argc, char *_argv[])
                      "",
                      m_iconTheme.dir().absolutePath())
 {
-    m_appIndicator.addMenuItem("Quit");
-    connect(&m_appIndicator,
-            SIGNAL(menuItemActivated(QString, GtkWidget *)),
+    dqtx::QAppIndicatorMenu *menu = new dqtx::QAppIndicatorMenu();
+    dqtx::QAppIndicatorMenuItem *item = new dqtx::QAppIndicatorMenuItem("Quit");
+    menu->addMenuItem(item);
+    item->show();
+    m_appIndicator.setMenu(menu);
+    connect(item,
+            SIGNAL(menuItemActivated()),
             this,
-            SLOT(onQuitClicked(QString, GtkWidget *)));
+            SLOT(onQuitClicked()), Qt::QueuedConnection);
 }
 
 void appindicator::run()
@@ -25,12 +29,9 @@ void appindicator::run()
     m_application.exec();
 }
 
-void appindicator::onQuitClicked(QString _label, GtkWidget *_item)
+void appindicator::onQuitClicked()
 {
-    if (_label == "Quit")
-    {
-        m_application.quit();
-    }
+    QApplication::quit();
 }
 
 void appindicator::onTimeout()
