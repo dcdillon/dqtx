@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+includedir=${prefix}/include
+libdir=${exec_prefix}/lib
+
+Name: dqtx
+Description: Dan's Qt eXtensions
+Version: 0.0.1
+Requires: appindicator-0.1 Qt5Core Qt5Gui Qt5Widgets
+Libs: -L${libdir} -ldqtx

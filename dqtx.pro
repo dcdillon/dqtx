@@ -18,7 +18,8 @@ DISTFILES += debian/changelog \
              debian/libdqtx0.install \
              debian/libdqtx-dev.dirs \
              debian/libdqtx-dev.install \
-             debian/source/format
+             debian/source/format \
+             dqtx.pc
 
 VERSION = 0.0.1
 
@@ -49,3 +50,7 @@ INSTALLS += target
 includes.path=/usr/include/dqtx
 includes.files=include/dqtx/*
 INSTALLS += includes
+
+pkgconfig.path=/usr/lib/pkgconfig
+pkgconfig.files=dqtx.pc
+INSTALLS += pkgconfig
