@@ -1,10 +1,10 @@
-libdqtx (0.0.1-2) vivid; urgency=medium
+libdqtx (0.0.1-2) unstable; urgency=medium
 
   * Second version of .deb packages to avoid lintian errors
 
  -- Daniel C. Dillon <dcdillon@gmail.com>  Sat, 22 Aug 2015 12:28:27 -0500
 
-libdqtx (0.0.1-1) vivid; urgency=low
+libdqtx (0.0.1-1) unstable; urgency=low
 
   * Initial release
 
