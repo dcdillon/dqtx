@@ -1,6 +1,36 @@
 # dqtx ![build status](https://travis-ci.org/dcdillon/dqtx.svg?branch=master)
 A library of Qt extensions I have found useful
 
+## Installation
+
+### Basic Install
+For a basic install, run the following:
+
+```
+qmake PREFIX=/usr/local
+make
+make install
+```
+### Debian Package
+
+There is a helper script that will generate a debian package that can be used for installation.  To generate debian packages for dqtx, run the following:
+
+```
+scripts/generate_deb
+```
+This will create two .deb files in the deb directory.  These can then be installed using dpkg.
+
+Note: generate_deb uses debuild which is provided by the devscripts package.
+
+## Usage
+dqtx is currently comprised of two libraries.  libdqtx.so and libdqtxAppIndicator.so.  Both are installed with pkg-config files so you can get the appropriate link commands by running `pkg-config --libs dqtx` or `pkg-config --libs dqtxAppIndicator`.  To do this easily in a qmake .pro file, add the following:
+
+```
+CONFIG += link_pkgconfig
+PKGCONFIG += dqtx
+PKGCONFIG += dqtxAppIndicator
+```
+
 ## Widgets
 #### QSparkLineWidget ![SparkLine](images/sparkline.png)
 QSparkLineWidget is a widget that draws a spark line (small graph) of a time series.  It is useful in QTableWidgets as an easy way of visualizing trends in data.
