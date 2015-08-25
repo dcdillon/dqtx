@@ -72,13 +72,10 @@ QAppIndicator::QAppIndicator(const QString &_name,
 
 QAppIndicator::~QAppIndicator()
 {
-    //g_object_unref(G_OBJECT(m_appIndicator));
+    // g_object_unref(G_OBJECT(m_appIndicator));
 }
 
-void QAppIndicator::setMenu(QAppIndicatorMenu *_menu)
-{
-    emit menuSet(_menu);
-}
+void QAppIndicator::setMenu(QAppIndicatorMenu *_menu) { emit menuSet(_menu); }
 
 void QAppIndicator::show() { emit shown(true); }
 
@@ -105,7 +102,7 @@ void QAppIndicator::onMenuSet(QAppIndicatorMenu *_menu)
     {
         delete m_menu;
     }
-    
+
     m_menu = _menu;
     app_indicator_set_menu(m_appIndicator, GTK_MENU(_menu->m_menu));
     _menu->setParent(this);

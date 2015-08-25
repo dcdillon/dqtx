@@ -28,43 +28,53 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
-#undef signals
-#include <libappindicator/app-indicator.h>
-#define signals public
-
-#include <QObject>
+#include <dqtx/QAppIndicatorMenuItem.hpp>
 
 namespace dqtx
 {
-class QAppIndicatorMenu;
-
-class QAppIndicatorMenuItem : public QObject
+void QAppIndicatorMenuItem::menuItemActivatedExternal(GtkMenuItem *_item,
+                                                      gpointer _data)
 {
-    Q_OBJECT
-    
-    friend class QAppIndicatorMenu;
-   public:
-    static void menuItemActivatedExternal(GtkMenuItem *_item, gpointer _data);
+    Q_UNUSED(_item);
 
-   public:
-    QAppIndicatorMenuItem(const QString &_label);
-    virtual ~QAppIndicatorMenuItem();
-    void show();
-    void hide();
-    
-protected:
-    void menuItemActivatedInternal();
+    QAppIndicatorMenuItem *data = static_cast< QAppIndicatorMenuItem * >(_data);
+    data->menuItemActivatedInternal();
+}
 
-signals:
-    void menuItemActivated();
-    void shown(bool _visible);
+QAppIndicatorMenuItem::QAppIndicatorMenuItem(const QString &_label)
+    : m_label(_label)
+{
+    connect(this, SIGNAL(shown(bool)), this, SLOT(onShown(bool)));
 
-   public slots:
-    void onShown(bool _visible);
+    m_item = gtk_menu_item_new_with_label(m_label.toLocal8Bit().data());
+    g_signal_connect(
+        m_item, "activate", G_CALLBACK(menuItemActivatedExternal), this);
+}
 
-   private:
-    QString m_label;
-    GtkWidget *m_item;
-};
+QAppIndicatorMenuItem::~QAppIndicatorMenuItem()
+{
+    g_object_unref(G_OBJECT(m_item));
+}
+
+void QAppIndicatorMenuItem::show() { emit shown(true); }
+
+void QAppIndicatorMenuItem::hide() { emit shown(false); }
+
+void QAppIndicatorMenuItem::menuItemActivatedInternal()
+{
+    emit menuItemActivated();
+}
+
+void QAppIndicatorMenuItem::onShown(bool _visible)
+{
+    if (_visible)
+    {
+        gtk_widget_show(m_item);
+    }
+    else
+    {
+        gtk_widget_hide(m_item);
+    }
+}
+
 }  // namespace dqtx

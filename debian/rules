@@ -22,7 +22,7 @@ include /usr/share/dpkg/default.mk
 	dh $@
 
 override_dh_auto_build:
-	qmake && make
+	qmake PREFIX=/usr && make
 
 override_dh_auto_clean:
 	[ ! -f Makefile ] || $(MAKE) distclean 

@@ -28,38 +28,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
-#undef signals
-#include <libappindicator/app-indicator.h>
-#define signals public
-
-#include <QObject>
-#include "QAppIndicatorMenuItem.hpp"
+#include <dqtx/QAppIndicatorMenu.hpp>
 
 namespace dqtx
 {
-class QAppIndicator;
-
-class QAppIndicatorMenu : public QObject
+QAppIndicatorMenu::QAppIndicatorMenu()
 {
-    Q_OBJECT
-    
-    friend class QAppIndicator;
-    
-   public:
-    QAppIndicatorMenu();
-    virtual ~QAppIndicatorMenu();
-    void addMenuItem(QAppIndicatorMenuItem *_item);
+    connect(this,
+            SIGNAL(menuItemAdded(QAppIndicatorMenuItem *)),
+            this,
+            SLOT(onMenuItemAdded(QAppIndicatorMenuItem *)));
+    m_menu = gtk_menu_new();
+}
 
-signals:
-    void menuItemAdded(QAppIndicatorMenuItem *_item);
-    
-   public slots:
-    void onMenuItemAdded(QAppIndicatorMenuItem *_item);
-    
-   private:
-    GtkWidget *m_menu;
-    QList< QAppIndicatorMenuItem * > m_menuItems;
-};
+QAppIndicatorMenu::~QAppIndicatorMenu() { g_object_unref(G_OBJECT(m_menu)); }
+
+void QAppIndicatorMenu::addMenuItem(QAppIndicatorMenuItem *_item)
+{
+    emit menuItemAdded(_item);
+}
+
+void QAppIndicatorMenu::onMenuItemAdded(QAppIndicatorMenuItem *_item)
+{
+    gtk_menu_shell_append(GTK_MENU_SHELL(m_menu), _item->m_item);
+    g_object_ref(_item->m_item);
+    m_menuItems.push_back(_item);
+    _item->setParent(this);
+}
 
 }  // namespace dqtx

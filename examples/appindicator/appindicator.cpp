@@ -17,7 +17,8 @@ appindicator::appindicator(int _argc, char *_argv[])
     connect(item,
             SIGNAL(menuItemActivated()),
             this,
-            SLOT(onQuitClicked()), Qt::QueuedConnection);
+            SLOT(onQuitClicked()),
+            Qt::QueuedConnection);
 }
 
 void appindicator::run()
@@ -29,10 +30,7 @@ void appindicator::run()
     m_application.exec();
 }
 
-void appindicator::onQuitClicked()
-{
-    QApplication::quit();
-}
+void appindicator::onQuitClicked() { QApplication::quit(); }
 
 void appindicator::onTimeout()
 {
