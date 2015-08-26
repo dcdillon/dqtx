@@ -15,13 +15,15 @@ HEADERS += include/dqtx/QSparkLineWidget.hpp \
            include/dqtx/QSparkLineAndBarsWidget.hpp \
            include/dqtx/QDensityWidget.hpp \
            include/dqtx/QTextIconFactory.hpp \
-           include/dqtx/QIconTheme.hpp
+           include/dqtx/QIconTheme.hpp \
+           include/dqtx/QSparkLineIconFactory.hpp
 
 SOURCES += src/QSparkLineWidget.cpp \
            src/QSparkLineAndBarsWidget.cpp \
            src/QDensityWidget.cpp \
            src/QTextIconFactory.cpp \
-           src/QIconTheme.cpp
+           src/QIconTheme.cpp \
+           src/QSparkLineIconFactory.cpp
            
 target.path=$$PREFIX/lib
 INSTALLS += target

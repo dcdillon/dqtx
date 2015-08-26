@@ -6,7 +6,8 @@
 #include <map>
 #include <dqtx/QSparkLineWidget.hpp>
 #include <dqtx/QSparkLineAndBarsWidget.hpp>
-#include <dqtx/QDensityWidget.hpp>
+#include <dqtx/QAppIndicator.hpp>
+#include <dqtx/QIconTheme.hpp>
 
 class cpu_info
 {
@@ -42,6 +43,9 @@ class cpumonitor : public QObject
    private:
     QApplication m_application;
     QTableWidget m_table;
+    dqtx::QIconTheme m_iconTheme;
+    dqtx::QAppIndicator *m_appIndicator;
+    QList< double > m_cpuUsageHistory;
     std::map< std::string, cpu_info > m_cpuInfoByCPU;
 
    public:

@@ -6,8 +6,12 @@
 #include <cstdlib>
 #include <QTimer>
 #include <QColor>
+#include <dqtx/QSparkLineIconFactory.hpp>
 
-cpumonitor::cpumonitor(int _argc, char *_argv[]) : m_application(_argc, _argv)
+cpumonitor::cpumonitor(int _argc, char *_argv[])
+    : m_application(_argc, _argv)
+    , m_table(32, 3)
+    , m_appIndicator(NULL)
 {
     read_proc_stat();
 }
@@ -16,13 +20,15 @@ void cpumonitor::run()
 {
     m_table.setColumnCount(3);
     m_table.setRowCount(m_cpuInfoByCPU.size());
+    
     m_table.show();
-
+    
     QTimer *timer = new QTimer(this);
     timer->setInterval(1000);
     connect(timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
     timer->start();
-
+    
+    
     m_application.exec();
 }
 
@@ -32,6 +38,10 @@ void cpumonitor::on_timeout()
 
     if (firstTime)
     {
+        m_appIndicator = new dqtx::QAppIndicator("dqtx-cpu-monitor", "", "", m_iconTheme.dir().absolutePath());
+        dqtx::QAppIndicatorMenu *menu = new dqtx::QAppIndicatorMenu();
+        m_appIndicator->setMenu(menu);
+        
         int cpuIndex = 0;
         for (auto &i : m_cpuInfoByCPU)
         {
@@ -64,6 +74,24 @@ void cpumonitor::on_timeout()
     }
 
     read_proc_stat();
+    
+    static int32_t count = 0;
+    
+    QIcon sparkLineIcon = dqtx::QSparkLineIconFactory::create(m_cpuUsageHistory,
+        0, 1, QColor(Qt::blue));
+    
+    if (count % 2)
+    {
+        m_iconTheme.addIcon(sparkLineIcon, "cpu-sparkline");
+        m_appIndicator->setIconName("cpu-sparkline");
+    }
+    else
+    {
+        m_iconTheme.addIcon(sparkLineIcon, "cpu-sparkline-2");
+        m_appIndicator->setIconName("cpu-sparkline-2");
+    }
+    ++count;
+    m_appIndicator->show();
 }
 
 void cpumonitor::read_proc_stat()
@@ -174,4 +202,11 @@ void cpumonitor::read_proc_stat()
         m_cpuInfoByCPU["cpu"].m_sparkLineAndBarsWidget->insertObservation(
             1 - combinedIdlePercent, procsRunning);
     }
+    
+    if (m_cpuUsageHistory.size() == 30)
+    {
+        m_cpuUsageHistory.pop_front();
+    }
+    
+    m_cpuUsageHistory.push_back(1 - combinedIdlePercent);
 }
