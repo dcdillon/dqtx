@@ -2,7 +2,9 @@
 
 int main(int _argc, char *_argv[])
 {
-    appindicator app(_argc, _argv);
-    app.run();
+    QApplication application(_argc, _argv);
+    appindicator app;
+    app.initialize();
+    application.exec();
     return 0;
 }

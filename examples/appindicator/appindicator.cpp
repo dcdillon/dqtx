@@ -2,9 +2,8 @@
 #include <QTimer>
 #include <dqtx/QTextIconFactory.hpp>
 
-appindicator::appindicator(int _argc, char *_argv[])
-    : m_application(_argc, _argv)
-    , m_appIndicator("appindicator-example",
+appindicator::appindicator()
+    : m_appIndicator("appindicator-example",
                      "applications-chat-panel",
                      "",
                      m_iconTheme.dir().absolutePath())
@@ -21,13 +20,12 @@ appindicator::appindicator(int _argc, char *_argv[])
             Qt::QueuedConnection);
 }
 
-void appindicator::run()
+void appindicator::initialize()
 {
     QTimer *timer = new QTimer(this);
     timer->setInterval(5000);
     connect(timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
     timer->start();
-    m_application.exec();
 }
 
 void appindicator::onQuitClicked() { QApplication::quit(); }

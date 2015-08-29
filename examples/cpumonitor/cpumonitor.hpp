@@ -41,16 +41,16 @@ class cpumonitor : public QObject
 {
     Q_OBJECT
    private:
-    QApplication m_application;
     QTableWidget m_table;
     dqtx::QIconTheme m_iconTheme;
-    dqtx::QAppIndicator *m_appIndicator;
+    dqtx::QAppIndicator m_appIndicator;
     QList< double > m_cpuUsageHistory;
     std::map< std::string, cpu_info > m_cpuInfoByCPU;
 
    public:
-    cpumonitor(int _argc, char *_argv[]);
-    void run();
+    cpumonitor();
+    ~cpumonitor();
+    void initialize();
 
    protected:
     void read_proc_stat();

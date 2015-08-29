@@ -8,71 +8,72 @@
 #include <QColor>
 #include <dqtx/QSparkLineIconFactory.hpp>
 
-cpumonitor::cpumonitor(int _argc, char *_argv[])
-    : m_application(_argc, _argv)
-    , m_table(32, 3)
-    , m_appIndicator(NULL)
+cpumonitor::cpumonitor()
+    : m_appIndicator("dqtx-cpu-monitor", "", "", m_iconTheme.dir().absolutePath())
 {
     read_proc_stat();
 }
 
-void cpumonitor::run()
+cpumonitor::~cpumonitor()
+{
+    for (auto &i : m_cpuInfoByCPU)
+    {
+        if (i.second.m_sparklineWidget)
+        {
+            delete i.second.m_sparklineWidget;
+        }
+        else if (i.second.m_sparkLineAndBarsWidget)
+        {
+            delete i.second.m_sparkLineAndBarsWidget;
+        }
+    }
+}
+
+void cpumonitor::initialize()
 {
     m_table.setColumnCount(3);
     m_table.setRowCount(m_cpuInfoByCPU.size());
-    
     m_table.show();
+    
+    dqtx::QAppIndicatorMenu *menu = new dqtx::QAppIndicatorMenu();
+    m_appIndicator.setMenu(menu);
+    
+    int cpuIndex = 0;
+    for (auto &i : m_cpuInfoByCPU)
+    {
+        m_table.setItem(
+            cpuIndex, 0, new QTableWidgetItem(QString(i.first.c_str())));
+
+        if (cpuIndex > 0)
+        {
+            i.second.m_sparklineWidget = new dqtx::QSparkLineWidget();
+            i.second.m_sparklineWidget->setMinimum(0);
+            i.second.m_sparklineWidget->setColor(QColor(Qt::blue));
+            m_table.setCellWidget(cpuIndex, 2, i.second.m_sparklineWidget);
+        }
+        else
+        {
+            i.second.m_sparkLineAndBarsWidget =
+                new dqtx::QSparkLineAndBarsWidget();
+            i.second.m_sparkLineAndBarsWidget->setLineMinimum(0);
+            i.second.m_sparkLineAndBarsWidget->setBarMinimum(0);
+            i.second.m_sparkLineAndBarsWidget->setLineColor(
+                QColor(Qt::blue));
+            m_table.setCellWidget(
+                cpuIndex, 2, i.second.m_sparkLineAndBarsWidget);
+        }
+
+        ++cpuIndex;
+    }
     
     QTimer *timer = new QTimer(this);
     timer->setInterval(1000);
     connect(timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
     timer->start();
-    
-    
-    m_application.exec();
 }
 
 void cpumonitor::on_timeout()
 {
-    static bool firstTime = true;
-
-    if (firstTime)
-    {
-        m_appIndicator = new dqtx::QAppIndicator("dqtx-cpu-monitor", "", "", m_iconTheme.dir().absolutePath());
-        dqtx::QAppIndicatorMenu *menu = new dqtx::QAppIndicatorMenu();
-        m_appIndicator->setMenu(menu);
-        
-        int cpuIndex = 0;
-        for (auto &i : m_cpuInfoByCPU)
-        {
-            m_table.setItem(
-                cpuIndex, 0, new QTableWidgetItem(QString(i.first.c_str())));
-
-            if (cpuIndex > 0)
-            {
-                i.second.m_sparklineWidget = new dqtx::QSparkLineWidget();
-                i.second.m_sparklineWidget->setMinimum(0);
-                i.second.m_sparklineWidget->setColor(QColor(Qt::blue));
-                m_table.setCellWidget(cpuIndex, 2, i.second.m_sparklineWidget);
-            }
-            else
-            {
-                i.second.m_sparkLineAndBarsWidget =
-                    new dqtx::QSparkLineAndBarsWidget();
-                i.second.m_sparkLineAndBarsWidget->setLineMinimum(0);
-                i.second.m_sparkLineAndBarsWidget->setBarMinimum(0);
-                i.second.m_sparkLineAndBarsWidget->setLineColor(
-                    QColor(Qt::blue));
-                m_table.setCellWidget(
-                    cpuIndex, 2, i.second.m_sparkLineAndBarsWidget);
-            }
-
-            ++cpuIndex;
-        }
-
-        firstTime = false;
-    }
-
     read_proc_stat();
     
     static int32_t count = 0;
@@ -83,15 +84,15 @@ void cpumonitor::on_timeout()
     if (count % 2)
     {
         m_iconTheme.addIcon(sparkLineIcon, "cpu-sparkline");
-        m_appIndicator->setIconName("cpu-sparkline");
+        m_appIndicator.setIconName("cpu-sparkline");
     }
     else
     {
         m_iconTheme.addIcon(sparkLineIcon, "cpu-sparkline-2");
-        m_appIndicator->setIconName("cpu-sparkline-2");
+        m_appIndicator.setIconName("cpu-sparkline-2");
     }
     ++count;
-    m_appIndicator->show();
+    m_appIndicator.show();
 }
 
 void cpumonitor::read_proc_stat()

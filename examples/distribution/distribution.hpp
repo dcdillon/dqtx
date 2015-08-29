@@ -11,12 +11,11 @@ class distribution : public QObject
 {
     Q_OBJECT
    private:
-    QApplication m_application;
     QTableWidget m_table;
-    dqtx::QDensityWidget *m_normalWidget;
-    dqtx::QDensityWidget *m_lognormalWidget;
-    dqtx::QDensityWidget *m_bernoulliWidget;
-    dqtx::QDensityWidget *m_bimodalWidget;
+    dqtx::QDensityWidget m_normalWidget;
+    dqtx::QDensityWidget m_lognormalWidget;
+    dqtx::QDensityWidget m_bernoulliWidget;
+    dqtx::QDensityWidget m_bimodalWidget;
 
     std::default_random_engine m_generator;
     std::normal_distribution< double > m_normalRand;
@@ -25,8 +24,8 @@ class distribution : public QObject
     std::bernoulli_distribution m_bernoulliRand;
 
    public:
-    distribution(int _argc, char *_argv[]);
-    void run();
+    distribution();
+    void initialize();
 
    private slots:
     void on_timeout();

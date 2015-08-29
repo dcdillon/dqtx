@@ -2,7 +2,9 @@
 
 int main(int _argc, char *_argv[])
 {
-    cpumonitor monitor(_argc, _argv);
-    monitor.run();
+    QApplication application(_argc, _argv);
+    cpumonitor monitor;
+    monitor.initialize();
+    application.exec();
     return 0;
 }
