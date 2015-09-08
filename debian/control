@@ -15,6 +15,6 @@ Description: Dan's Qt eXtension Library
 Package: libdqtx0
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, libappindicator1
 Description: Dan's Qt eXtension Library
  Binary package
