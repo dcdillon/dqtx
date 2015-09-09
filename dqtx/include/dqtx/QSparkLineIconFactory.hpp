@@ -33,6 +33,7 @@
 #include <QIcon>
 #include <QList>
 #include <limits>
+#include <ctime>
 
 namespace dqtx
 {
@@ -44,6 +45,19 @@ class QSparkLineIconFactory
                         const double _minRange = 0,
                         const QColor &_color = QColor(Qt::black),
                         const QColor &_bgColor = QColor(Qt::transparent),
+                        const int _width = 48,
+                        const int _height = 48,
+                        const int _leftPadding = 3,
+                        const int _rightPadding = 3,
+                        const int _topPadding = 3,
+                        const int _bottomPadding = 3);
+    
+    static QIcon create(const QList< QPair< double, time_t > > &_observations,
+                        const QColor &_color,
+                        QList< QPair< time_t, QColor > > _divisions,
+                        const QColor &_bgColor = QColor(Qt::transparent),
+                        const double _minimum = std::numeric_limits< double >::max(),
+                        const double _minRange = 0,
                         const int _width = 48,
                         const int _height = 48,
                         const int _leftPadding = 3,

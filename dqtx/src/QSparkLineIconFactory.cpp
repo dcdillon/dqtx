@@ -117,4 +117,117 @@ QIcon QSparkLineIconFactory::create(const QList< double > &_observations,
     return QIcon(pixmap);
 }
 
+QIcon QSparkLineIconFactory::create(const QList< QPair< double, time_t > > &_observations,
+                        const QColor &_color,
+                        QList< QPair< time_t, QColor > > _divisions,
+                        const QColor &_bgColor,
+                               const double _minimum,
+                               const double _minRange,
+                               const int _width,
+                               const int _height,
+                               const int _leftPadding,
+                               const int _rightPadding,
+                               const int _topPadding,
+                               const int _bottomPadding)
+{
+    QPixmap pixmap(_width, _height);
+    pixmap.fill(_bgColor);
+    QPainter painter(&pixmap);
+
+    int graphHeight = pixmap.rect().height() - _topPadding - _bottomPadding;
+    int graphWidth = pixmap.rect().width() - _leftPadding - _rightPadding;
+    QPoint bl = pixmap.rect().bottomLeft();
+    
+    _divisions.push_front(QPair< time_t, QColor >(0, _color));
+    QList< QPair< time_t, QColor > >::iterator color = _divisions.begin();
+    
+    QPainterPath path;
+    
+    if (_observations.size() > 1)
+    {
+        double min = std::min_element(_observations.begin(), _observations.end())->first;
+        min = std::min(min, _minimum);
+        double max = std::max_element(_observations.begin(), _observations.end())->first;
+        
+        double range = max - min;
+        
+        if (range < _minRange)
+        {
+            max += _minRange - range;
+        }
+        
+        double skip = 0;
+        
+        if (min != max)
+        {
+            skip = double(graphHeight - 1) / (max - min);
+            
+            double width = graphWidth / double(_observations.size() - 1);
+            
+            double x = _leftPadding;
+            double y = -_bottomPadding;
+            
+            bool first = true;
+            
+            QList< QPair< double, time_t > >::const_iterator i = _observations.begin();
+            QList< QPair< double, time_t > >::const_iterator iend = _observations.end();
+            
+            for ( ; i != iend; ++i)
+            {
+                QList< QPair< time_t, QColor > >::iterator j = color;
+                QList< QPair< time_t, QColor > >::iterator jend = _divisions.end();
+                QList< QPair< time_t, QColor > >::iterator newColor = color;
+                
+                for ( ; j != jend; ++j)
+                {
+                    if (i->second >= j->first)
+                    {   
+                        newColor = j;
+                    }
+                }
+                
+                if (newColor != color)
+                {
+                    if (!path.isEmpty())
+                    {
+                        painter.setRenderHint(QPainter::Antialiasing, true);
+                        painter.setPen(QPen(color->second, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+                        painter.drawPath(path);
+                        QPainterPath newPath;
+                        newPath.moveTo(path.currentPosition());
+                        path = newPath;
+                    }
+                    
+                    color = newColor;
+                }
+                
+                double height = (i->first - min) * skip;
+                
+                if (first)
+                {
+                    y -= height;
+                    first = false;
+                    path.moveTo(bl.x() + int(x), bl.y() + int(y));
+                }
+                else
+                {
+                    x += width;
+                    y = -_bottomPadding - height;
+                    
+                    path.lineTo(bl.x() + int(x), bl.y() + int(y));
+                }
+            }
+        }
+    }
+
+    if (!path.isEmpty())
+    {
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        painter.setPen(QPen(color->second, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        painter.drawPath(path);
+    }
+    
+    return QIcon(pixmap);
+}
+
 }  // namespace dqtx
