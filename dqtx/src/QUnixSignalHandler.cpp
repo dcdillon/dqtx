@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <sys/signal.h>
 #include <unistd.h>
+#include <stdexcept>
 
 namespace dqtx
 {
