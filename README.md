@@ -46,7 +46,7 @@ QDensityWidget is a widget that displays a density plot for a data set.  It is u
 QTextIconFactory has static functions for creating QIcons from arbitrary text.  It fits the text into the specified size and creates a QIcon.
 
 #### QAppIndicator ![AppIndicator](images/appindicator.png)
-QAppIndicator is a wrapper for libappindicator that allows you to easily, and within Qt paradigms, create AppIndicators for Unity.
+QAppIndicator is a wrapper for libappindicator that allows you to easily (and using Qt paradigms) create AppIndicators for Unity.
 
 #### QIconTheme
 QIconTheme creates a temporary icon theme with the icons and names that you give it.  These can then be accessed by classes that require icons from a theme (e.g. QAppIndicator).
