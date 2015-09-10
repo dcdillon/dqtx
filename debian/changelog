@@ -1,3 +1,9 @@
+libdqtx (0.0.3-1) vivid; urgency=medium
+
+  * Added QUnixSignalHandler class
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Thu, 10 Sep 2015 10:36:32 -0500
+
 libdqtx (0.0.2-2) vivid; urgency=medium
 
   * updated pkgconfig settings to be correct

@@ -41,6 +41,10 @@ script:
   - $QMAKE_COMMAND
   - make
   - popd
+  - pushd examples/signalhandler
+  - $QMAKE_COMMAND
+  - make
+  - popd
 
 notifications:
   email:
