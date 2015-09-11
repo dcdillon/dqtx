@@ -1,6 +1,7 @@
 rm -rf deb
 rm -rf *.tar.gz
 
+DEBVERSION=`head -n1 debian/changelog | sed -r 's/.*\((.*)\).*/\1/'`
 qmake && make -j dist
 
 mkdir deb
@@ -15,8 +16,9 @@ mv ${PACKAGE}${VERSION}.tar.gz lib${DEBPACKAGE}_${VERSION}.orig.tar.gz
 tar -xzf lib${DEBPACKAGE}_${VERSION}.orig.tar.gz
 mv ${PACKAGE}${VERSION} lib${DEBPACKAGE}-${VERSION}
 pushd lib${DEBPACKAGE}-${VERSION}
+cp -r ../../debian .
 
-debuild -uc -us -rfakeroot
+debuild -S -sa -uc -us -rfakeroot
 
 popd
 

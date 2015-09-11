@@ -1,4 +1,22 @@
-libdqtx (0.0.3-2) UNRELEASED; urgency=medium
+libdqtx (0.0.5-1) vivid; urgency=medium
+
+  * Bumping version again because I can't figure out launchpad
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Fri, 11 Sep 2015 12:41:14 -0500
+
+libdqtx (0.0.4-1) vivid; urgency=medium
+
+  * Bumping version
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Fri, 11 Sep 2015 12:31:31 -0500
+
+libdqtx (0.0.3-3) vivid; urgency=medium
+
+  * Fixing build depends
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Fri, 11 Sep 2015 11:32:35 -0500
+
+libdqtx (0.0.3-2) vivid; urgency=medium
 
   * fixed pkg-config settings
 

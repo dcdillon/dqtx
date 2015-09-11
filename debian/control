@@ -1,7 +1,7 @@
 Source: libdqtx
 Priority: optional
 Maintainer: Daniel C. Dillon <dcdillon@gmail.com>
-Build-Depends: debhelper (>= 9)
+Build-Depends: debhelper (>= 9), qt5-default, libappindicator-dev, libboost-all-dev
 Standards-Version: 3.9.6
 Section: libs
 
