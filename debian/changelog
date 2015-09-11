@@ -1,3 +1,9 @@
+libdqtx (0.0.6-1) vivid; urgency=medium
+
+  * Changed libboost-all-dev to libboost-random-dev in build depends
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Fri, 11 Sep 2015 14:40:06 -0500
+
 libdqtx (0.0.5-1) vivid; urgency=medium
 
   * Bumping version again because I can't figure out launchpad
