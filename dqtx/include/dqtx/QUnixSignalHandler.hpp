@@ -7,30 +7,29 @@
 
 namespace dqtx
 {
-
 class QUnixSignalHandler : public QObject
 {
     Q_OBJECT
-    
-private:
+
+   private:
     static std::atomic< int32_t > s_initializationCount;
     static int s_socketPair[2];
-    
-private:
+
+   private:
     QSocketNotifier *m_notifier;
-    
-public:
+
+   public:
     static void signalHandler(int _sig);
-    
-public:
+
+   public:
     QUnixSignalHandler();
     bool registerSignal(int _signal);
-    
+
 signals:
     void signal(int _signal);
-    
-public slots:
+
+   public slots:
     void onSignal(int _unused);
 };
 
-} // namespace dqtx
+}  // namespace dqtx

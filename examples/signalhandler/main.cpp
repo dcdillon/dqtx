@@ -11,12 +11,14 @@ int main(int _argc, char *_argv[])
     dqtx::QUnixSignalHandler signalHandler;
     SignalProcessor processor;
 
-    QObject::connect(&signalHandler, SIGNAL(signal(int)), &processor, SLOT(onUnixSignal(int)));
+    QObject::connect(&signalHandler,
+                     SIGNAL(signal(int)),
+                     &processor,
+                     SLOT(onUnixSignal(int)));
     signalHandler.registerSignal(SIGINT);
     signalHandler.registerSignal(SIGTERM);
     signalHandler.registerSignal(SIGHUP);
 
-    
     application.exec();
     return 0;
 }

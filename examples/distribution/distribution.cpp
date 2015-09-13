@@ -7,20 +7,17 @@
 #include <QTimer>
 #include <QColor>
 
-distribution::distribution()
-    : m_table(4, 2), m_normalRandNonzero(5.0)
-{
-}
+distribution::distribution() : m_table(4, 2), m_normalRandNonzero(5.0) {}
 
 void distribution::initialize()
 {
     m_table.show();
-    
+
     QTimer *timer = new QTimer(this);
     timer->setInterval(1000);
     connect(timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
     timer->start();
-    
+
     m_table.setItem(0, 0, new QTableWidgetItem(QString("Normal")));
     m_table.setCellWidget(0, 1, &m_normalWidget);
 
@@ -32,7 +29,6 @@ void distribution::initialize()
 
     m_table.setItem(3, 0, new QTableWidgetItem(QString("Bimodal")));
     m_table.setCellWidget(3, 1, &m_bimodalWidget);
-
 }
 
 void distribution::on_timeout()
