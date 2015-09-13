@@ -1,0 +1,13 @@
+#!/bin/bash
+
+scripts/generate_deb $*
+
+for DIST in $*; do
+    pushd deb.$DIST
+
+    CHANGES=`ls *.changes | tail -1`
+    debsign $CHANGES
+    dput ppa:dcdillon/ppa $CHANGES
+
+    popd
+done

@@ -1,3 +1,33 @@
+libdqtx (0.0.11-1~vivid) vivid; urgency=medium
+
+  * Trying out new changelog script
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Sun, 13 Sep 2015 11:44:49 -0500
+
+libdqtx (0.0.10-1~vivid) vivid; urgency=medium
+
+  * Upgraded compiler for ppa
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Sun, 13 Sep 2015 10:12:13 -0500
+
+libdqtx (0.0.9-1~vivid) vivid; urgency=medium
+
+  * More versioning
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Sat, 12 Sep 2015 14:07:19 -0500
+
+libdqtx (0.0.8-1~vivid) vivid; urgency=medium
+
+  * Versioning with the ubuntu version in the version
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Sat, 12 Sep 2015 13:04:33 -0500
+
+libdqtx (0.0.7-1) vivid; urgency=medium
+
+  * Working on builds for multiple ubuntu versions
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Sat, 12 Sep 2015 11:57:57 -0500
+
 libdqtx (0.0.6-1) vivid; urgency=medium
 
   * Changed libboost-all-dev to libboost-random-dev in build depends

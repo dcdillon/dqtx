@@ -1,25 +1,28 @@
-rm -rf deb
+#!/bin/bash
+
+rm -rf deb.*
 rm -rf *.tar.gz
 
-DEBVERSION=`head -n1 debian/changelog | sed -r 's/.*\((.*)\).*/\1/'`
-qmake && make -j dist
+qmake && make dist
 
-mkdir deb
-cp *.tar.gz deb
+for DIST in $*; do
+    mkdir deb.$DIST
+    cp *.tar.gz deb.$DIST
 
-pushd deb
+    pushd deb.$DIST
 
-PACKAGE=`ls *.tar.gz | grep -Po '^[A-Za-z]+'`
-DEBPACKAGE=`echo $PACKAGE | sed -r 's/([A-Z])/-\1/g' | tr '[:upper:]' '[:lower:]'`
-VERSION=`ls *.tar.gz | grep -Po '[0-9]+\.[0-9]+\.[0-9]+'`
-mv ${PACKAGE}${VERSION}.tar.gz lib${DEBPACKAGE}_${VERSION}.orig.tar.gz
-tar -xzf lib${DEBPACKAGE}_${VERSION}.orig.tar.gz
-mv ${PACKAGE}${VERSION} lib${DEBPACKAGE}-${VERSION}
-pushd lib${DEBPACKAGE}-${VERSION}
-cp -r ../../debian .
+    PACKAGE=`ls *.tar.gz | grep -Po '^[A-Za-z-]+'`
+    DEBPACKAGE=`echo $PACKAGE | sed -r 's/([A-Z])/-\1/g' | tr '[:upper:]' '[:lower:]'`
+    VERSION=`ls *.tar.gz | grep -Po '[0-9]+\.[0-9]+\.[0-9]+'`
+    mv ${PACKAGE}${VERSION}.tar.gz lib${DEBPACKAGE}_${VERSION}.orig.tar.gz
+    tar -xzf lib${DEBPACKAGE}_${VERSION}.orig.tar.gz
+    mv ${PACKAGE}${VERSION} lib${DEBPACKAGE}-${VERSION}
+    pushd lib${DEBPACKAGE}-${VERSION}
+    cp -r ../../debian.$DIST ./debian
 
-debuild -S -sa -uc -us -rfakeroot
+    debuild -S -sa -uc -us -rfakeroot
 
-popd
+    popd
 
-popd
+    popd
+done

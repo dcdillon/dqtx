@@ -1,0 +1,29 @@
+libdqtx (0.0.11-1~trusty) trusty; urgency=medium
+
+  * Trying out new changelog script
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Sun, 13 Sep 2015 11:44:49 -0500
+
+libdqtx (0.0.10-1~trusty) trusty; urgency=medium
+
+  * Upgraded compiler for ppa
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Sun, 13 Sep 2015 10:13:02 -0500
+
+libdqtx (0.0.9-1~trusty) trusty; urgency=medium
+
+  * More versioning
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Sat, 12 Sep 2015 18:01:17 -0500
+
+libdqtx (0.0.8-1~trusty) trusty; urgency=medium
+
+  * Versioning with the ubuntu version in the version string
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Sat, 12 Sep 2015 13:05:42 -0500
+
+libdqtx (0.0.7-1) trusty; urgency=medium
+
+  * Working on builds for multiple ubuntu versions
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Sat, 12 Sep 2015 12:00:36 -0500
