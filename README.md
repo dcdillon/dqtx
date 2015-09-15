@@ -16,11 +16,11 @@ make install
 There is a helper script that will generate a debian package that can be used for installation.  To generate debian packages for dqtx, run the following:
 
 ```
-scripts/generate_deb
+scripts/generate_deb [debian|vivid|trusty|precise]
 ```
-This will create two .deb files in the deb directory.  These can then be installed using dpkg.
+This will create two .deb files in the deb.DIST directory.  These can then be installed using dpkg.
 
-Note: generate_deb uses debuild which is provided by the devscripts package.
+Note: `generate_deb` uses `debuild` which is provided by the `devscripts` package.
 
 ## Usage
 dqtx is currently comprised of two libraries.  libdqtx.so and libdqtxAppIndicator.so.  Both are installed with pkg-config files so you can get the appropriate link commands by running `pkg-config --libs dqtx` or `pkg-config --libs dqtxAppIndicator`.  To do this easily in a qmake .pro file, add the following:
