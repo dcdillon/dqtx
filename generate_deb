@@ -40,12 +40,18 @@ while getopts "S" opt; do
     esac
 done
 
+if [ $# -eq 0 ]; then
+    DISTS="debian vivid trusty precise"
+else
+    DISTS=$*
+fi
+
 rm -rf deb.*
 rm -rf *.tar.gz
 
 qmake && make dist
 
-for DIST in $*; do
+for DIST in $DISTS; do
     mkdir deb.$DIST
     cp *.tar.gz deb.$DIST
 
