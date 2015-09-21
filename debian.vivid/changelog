@@ -1,3 +1,9 @@
+libdqtx (0.0.12-1~vivid) vivid; urgency=medium
+
+  * Using less restrictive build dependencies
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Mon, 21 Sep 2015 12:30:05 -0500
+
 libdqtx (0.0.11-1~vivid) vivid; urgency=medium
 
   * Trying out new changelog script
