@@ -1,3 +1,9 @@
+libdqtx (0.0.13-1~vivid) vivid; urgency=medium
+
+  * Added support for wily
+
+ -- Daniel C. Dillon <dcdillon@gmail.com>  Thu, 19 Nov 2015 06:03:43 -0600
+
 libdqtx (0.0.12-1~vivid) vivid; urgency=medium
 
   * Using less restrictive build dependencies
